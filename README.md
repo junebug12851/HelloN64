@@ -25,12 +25,9 @@ If you install the tools in a non-standard location you can easily update either
 
 ## Building
 
-If all is set correctly you just double click `build.bat` and everything will run and compile. You'll find the build 
-artifacts in the `out` folder. You'll need a way to play it using either an emulator or the real machine. There's
-lots of help out there for that.
-
-In `build.bat` there is a define that defaults to `NTSC_TV`, to correctly compile it must compile for a format
-however other options are `PAL_TV` and `MPAL_TV` which will all compile for that format.
+If all is set correctly you just double click `build.bat` and everything will run and compile. It builds 3 files, 
+one for each TV type (NTSC, PAL, and MPAL). They'll be placed in their own folders `build_<format name>`. There you
+will find the file you can run and contained in the folder is all the build artifacts.
 
 ## Why Visual Studio?
 
