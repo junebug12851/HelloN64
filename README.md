@@ -1,5 +1,7 @@
 # Hello N64
 
+![Preview Image](https://i.imgur.com/zodaIhy.png)
+
 So this is sort of a side project I'm doing for fun. It may or may not turn into anything but I'm hoping it may grow
 into something. I'm super new to learning the N64.
 
@@ -52,6 +54,10 @@ It's a little more annoying to switch back and forth but this way I can use `Sou
 great modern tools to help me.
 
 ## Flat Folder Structure and Filters
+
+![Comparison of VS filters and non-filter view](https://i.imgur.com/cJQ5y6Y.png)
+
+**On the left is VS Virtual Folders, on the right is how all other editors will see it.** (Keeping a simple flat build system with virtual organization)
 
 So you may have noticed all the files are on top, this is not how I like to do my projects. I prefer
 them to be deeply organized in folders nice and neat. However the tools have many limitations and bugs.
