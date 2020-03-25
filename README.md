@@ -1,6 +1,6 @@
 # Hello N64
 
-![Preview Image](https://i.imgur.com/zodaIhy.png)
+![Preview Image](https://thumbs.gfycat.com/FixedRichKangaroo-size_restricted.gif)
 
 So this is sort of a side project I'm doing for fun. It may or may not turn into anything but I'm hoping it may grow
 into something. I'm super new to learning the N64.
