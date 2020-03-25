@@ -48,6 +48,33 @@ in windows XP comepltely forgoing VS.
 It's a little more annoying to switch back and forth but this way I can use `SourceTree` and `VS2019` which are both
 great modern tools to help me.
 
+## Flat Folder Structure and Filters
+
+So you may have noticed all the files are on top, this is not how I like to do my projects. I prefer
+them to be deeply organized in folders nice and neat. However the tools have many limitations and bugs.
+
+In short I have a few options:
+
+* Use sub-folders and deal with a more complicated build. This is because Makefile doesn't like to deal with
+  files inside folders and I think it goofs up on long paths as well. In short there's various more complicated
+  work-arounds that are simple but fragile to implement and add to build complexity.
+* Don't use folders and deal with all the files top-level. This is the simplest because it keeps the build really
+  simple and is expandable but can get very messy.
+
+This is yet another reason why I choose VS filters. Mnay people, myself included, normally hate the filters VS defaults
+to because they look like folders but all the files are not really in those folders, they're all top-level. However given the
+limitations I can opt for the lesser evil and choose to have all my files top-level but under VS filters or "Virtual Folders".
+
+This means, to me, they're organized properly in folders but in reality their all top-level which satifies the build system
+and keeps things simple.
+
+This way I can refactor and re-organize files and deeply nest them into folders as much as I want and not have to worry about
+dealing with a complicated and fragile build system that would need careful refacotring if I were to move any files or 
+folders around.
+
+Again this also works for people that don't want to use VS and who just want to edit directly with Notepad++ or the like although
+you won't have the organized appearance filters can give.
+
 ## License
 
 * My code is Licensed Apache2 (Only to my code)
