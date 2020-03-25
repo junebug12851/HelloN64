@@ -4,10 +4,12 @@
 /*=================================
 			Libraries
 =================================*/
-#include  <nusys.h>
-#include  "config.h"
-#include  "spiral.h"
+#include <nusys.h>
+#include "gfx_screen.h"
+#include "spiral.h"
 #include "controllerState.h"
+#include "gfx_glist.h"
+#include "gfx_basis.h"
 
 /*=================================
 			 Prototypes

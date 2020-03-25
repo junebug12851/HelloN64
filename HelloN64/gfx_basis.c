@@ -6,7 +6,8 @@
 =================================*/
 
 #include <nusys.h>
-#include "config.h"
+#include "gfx_screen.h"
+#include "gfx_glist.h"
 
 /*=================================
          Global Variables

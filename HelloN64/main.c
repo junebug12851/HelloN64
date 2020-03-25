@@ -7,7 +7,7 @@
 
 #include <nusys.h>
 #include "stageManager.h"
-#include "hack_tvFormat.h"
+#include "tv.h"
 #include "onEvents.h"
 #include "controllerState.h"
 
@@ -20,8 +20,8 @@ void mainproc(void* dummy)
     // Register call-back function for Pre-NMI Event (Reset Button)
     nuPreNMIFuncSet((NUScPreNMIFunc)onPreNmi);
 
-    // This imposes a hack to fix it to work correctly for the TV Format being compiled for
-    hack_tvFix();
+    // Inits the TV format being compiled for
+    tv_Init();
 
     // Initialize and activate the graphics thread and Graphics Task Manager.
     // Sort of completes booting of the NuSys N64 OS

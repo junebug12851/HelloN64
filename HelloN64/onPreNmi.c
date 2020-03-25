@@ -1,10 +1,10 @@
-#include "hack_tvFormat.h"
+#include "tv.h"
 
 // This is when the "Reset" button is pressed
 
 void onPreNmi()
 {
-    // This calls the associated hack for the compiled TV format
+    // This calls the associated preNmi for the compiled TV format
     // if there is one
-    hack_tvPreNmi();
+    tv_PreNmi();
 }

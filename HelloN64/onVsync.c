@@ -1,7 +1,5 @@
 #include <nusys.h>
-#include "config.h"
 #include "stageManager.h"
-#include "hack_tvFormat.h"
 
 /*=================================
           vsyncCallback
