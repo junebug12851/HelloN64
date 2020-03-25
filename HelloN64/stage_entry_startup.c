@@ -11,177 +11,147 @@
 #include "gfx_glist.h"
 #include "gfx_basis.h"
 #include "stage_manager.h"
-
-/*=================================
-			 Prototypes
-=================================*/
-
-static void ClearBackground(u8 r, u8 g, u8 b);
+#include "gfx_materialColor.h"
 
 /*=================================
 		 Global Variables
 =================================*/
 
-struct Color
+struct BoxState
 {
-	u8 r;
-	u8 g;
-	u8 b;
+	// Positions
+	int x;
+	int y;
+
+	// Moving Right
+	u8 moveRight;
+
+	// Moving Down
+	u8 moveDown;
+
+	// Growing
+	u8 grow;
+
+	// Current size
+	u8 size;
+
+	// Border Color Ind
+	// To keep track of the color list position
+	u8 colorInd;
+
+	// Border Color
+	// Current color to render
+	struct ColorRGB color;
 };
 
-static struct Color color_list[19] = {
-	{255,  82,  82}, //  0) Red
-	{255,  64, 129}, //  1) Pink
-	{224,  64, 251}, //  2) Purple
-	{124,  77, 255}, //  3) Deep Purple
-	{ 83, 109, 254}, //  4) Indigo
-	{ 68, 138, 255}, //  5) Blue
-	{  3, 169, 244}, //  6) Light Blue
-	{  0, 188, 212}, //  7) Cyan
-	{  0, 150, 136}, //  8) Teal
-	{ 76, 175,  80}, //  9) Green
-	{139, 195,  74}, // 10) Light Green
-	{205, 220,  57}, // 11) Lime
-	{255, 235,  59}, // 12) Yellow
-	{255, 193,   7}, // 13) Amber
-	{255, 152,   0}, // 14) Orange
-	{255,  87,  34}, // 15) Deep Orange
-	{121,  85,  72}, // 16) Brown
-	{158, 158, 158}, // 17) Grey
-	{ 69,  90, 100}, // 18) Dark Blue Grey
+struct Box {
+	// Minimum size
+	u8 minSize;
+
+	// Maximum Size
+	u8 maxSize;
+
+	// Border Thickness
+	u8 thickness;
+
+	// Generic speed of many factors including x bounce
+	u8 speed;
+
+	// Slowness Y-Bounce
+	u8 slownessY;
+
+	// Slowness Growth
+	u8 slownessSize;
+
+	// Tmp State Variables
+	struct BoxState state;
 };
 
-static struct Color color_bg;
-static struct Color color_rect;
+struct BG {
+	// Color Ind
+	// To keep track of the color list position
+	u8 colorInd;
 
-// Specify the position of the rectangle
-static int x = SCREEN_WD / 2;
-static int y = SCREEN_HT / 2;
+	// BG Color
+	struct ColorRGB color;
+};
 
-static u8 rectMinSize = 10;
-static u8 rectSize = 30;
-static u8 rectMaxSize = 40;
-static u8 rectThickness = 2;
+struct Box box = {
+	10, // Min
+	40, // Max
+	2,  // Thickness
+	2,  // Speed
+	5,  // Slowness Y
+	8,  // Slowness Size
+	{
+		SCREEN_CENTER_X, // Initial Position X
+		SCREEN_CENTER_Y, // Initial Position Y
+		1, // Initially Moving Right
+		0, // Initially Moving Down
+		1,  // Initially Growing
+		30, // Size
+		MATERIAL_LIGHT_BLUE // Initial Color Index
+	}
+};
 
-static u8 moveRight = 1;
-static u8 moveDown = 0;
-static u8 grow = 1;
+struct BG bg = {
+	MATERIAL_DARK_BLUE_GREY // Initial Color Index
+};
 
-static u8 speed = 2;
-static u8 slownessY = 5;
-static u8 slownessSize = 8;
-
-static u16 counter = 0;
-
-static u8 bgInd = 16;
-static u8 rectInd = 0;
+// Constant ticking number
+u16 counter = 0;
 
 /*=================================
-			stage00_init
-		Initialize the stage
+		   ClearBackground
+ Wipe the background with a color
 =================================*/
 
-void _stageInit(void)
+static void ClearBackground(u8 r, u8 g, u8 b)
 {
-	color_bg = color_list[bgInd];
-	color_rect = color_list[rectInd];
+	gDPSetCycleType(glistp++, G_CYC_FILL);
+	gDPSetDepthImage(glistp++, nuGfxZBuffer); // nuGfxZBuffer is Nusys’ Z-Buffer 
+	gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WD, nuGfxZBuffer);
+	gDPSetFillColor(glistp++, (GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0)));
+	gDPFillRectangle(glistp++, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
+	gDPPipeSync(glistp++);
+
+	// Specify the RDP Cycle type
+	gDPSetCycleType(glistp++, G_CYC_FILL);
+
+	// Specify the color type
+	// Apparently takes a virtual address so we convert it from a physical address
+	gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WD, osVirtualToPhysical(nuGfxCfb_ptr));
+
+	// Specify the color
+	gDPSetFillColor(glistp++, (GPACK_RGBA5551(r, g, b, 1) << 16 | GPACK_RGBA5551(r, g, b, 1)));
+
+	// Draw a rectangle to the screen
+	gDPFillRectangle(glistp++, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
+
+	// Resyncronize for the next display list task
+	gDPPipeSync(glistp++);
 }
 
-/*=================================
-			stage00_destruct
-		Destruct The Stage
-=================================*/
-
-void _stageDestruct()
-{
-	
-}
-
-/*=================================
-		  stage00_update
-   Update variables and objects
-=================================*/
-
+// Cycle forward and wrap-around box color
 void incRectInd()
 {
-	rectInd++;
-	if (rectInd > 15) // Deep Orange
-		rectInd = 0; // Red
+	box.state.colorInd++;
 
-	color_rect = color_list[rectInd];
+	if (box.state.colorInd > MATERIAL_DEEP_ORANGE)
+		box.state.colorInd = MATERIAL_RED;
+
+	box.state.color = materialColorList[box.state.colorInd];
 }
 
+// Cycle forward and wrap-around background color
 void incBgInd()
 {
-	bgInd++;
-	if (bgInd > 18) // Dark Blue Grey
-		bgInd = 16; // Brown
+	bg.colorInd++;
 
-	color_bg = color_list[bgInd];
-}
+	if (bg.colorInd > MATERIAL_DARK_BLUE_GREY)
+		bg.colorInd = MATERIAL_BROWN;
 
-void _stageUpdate(void)
-{
-	// Get controller input
-	controllerRefreshButtonState();
-
-	// Counter always counts up and overflows back to zero
-	counter++;
-
-	// Move in direction
-	if (moveRight == 1)
-		x += speed;
-	else
-		x -= speed;
-
-	// Check for boundraries and adjust accordingly
-	if (x >= (SCREEN_WD - rectSize)) {
-		x -= (speed * 2);
-		moveRight = 0;
-		incRectInd();
-	}
-	else if (x <= (rectSize)) {
-		x += (speed * 2);
-		moveRight = 1;
-		incRectInd();
-	}
-
-	// Move up/down in intervals
-	if ((counter % slownessY) == 0)
-	{
-		if (moveDown == 1)
-			y += speed;
-		else
-			y -= speed;
-
-		if (y >= (SCREEN_HT - rectSize)) {
-			y -= (speed * 2);
-			moveDown = 0;
-			incBgInd();
-		}
-		else if (y <= (rectSize)) {
-			y += (speed * 2);
-			moveDown = 1;
-			incBgInd();
-		}
-	}
-
-	if ((counter % slownessSize) == 0)
-	{
-		if (grow == 1)
-			rectSize += speed;
-		else
-			rectSize -= speed;
-
-		if (rectSize >= rectMaxSize) {
-			rectSize -= (speed * 2);
-			grow = 0;
-		}
-		else if (rectSize <= rectMinSize) {
-			rectSize += (speed * 2);
-			grow = 1;
-		}
-	}
+	bg.color = materialColorList[bg.colorInd];
 }
 
 /*=================================
@@ -245,26 +215,112 @@ void drawSpiral(int x, int y)
 	gDPPipeSync(glistp++);
 }
 
+void _stageInit(void)
+{
+	// Fill in initital color with color from struct
+	// We have to wait until this function because we can't pull array values at compile time
+	bg.color = materialColorList[bg.colorInd];
+	box.state.color = materialColorList[box.state.colorInd];
+}
+
+void _stageUpdate(void)
+{
+	// Get controller input
+	controllerRefreshButtonState();
+
+	// Counter always counts up and overflows back to zero
+	counter++;
+
+	// Move in direction
+	if (box.state.moveRight == 1)
+		box.state.x += box.speed;
+	else
+		box.state.x -= box.speed;
+
+	// Check for boundraries and adjust accordingly
+	if (box.state.x >= (SCREEN_WD - box.state.size)) {
+		box.state.x -= (box.speed * 2);
+		box.state.moveRight = 0;
+		incRectInd();
+	}
+	else if (box.state.x <= (box.state.size)) {
+		box.state.x += (box.speed * 2);
+		box.state.moveRight = 1;
+		incRectInd();
+	}
+
+	// Move up/down in intervals
+	if ((counter % box.slownessY) == 0)
+	{
+		if (box.state.moveDown == 1)
+			box.state.y += box.speed;
+		else
+			box.state.y -= box.speed;
+
+		if (box.state.y >= (SCREEN_HT - box.state.size)) {
+			box.state.y -= (box.speed * 2);
+			box.state.moveDown = 0;
+			incBgInd();
+		}
+		else if (box.state.y <= (box.state.size)) {
+			box.state.y += (box.speed * 2);
+			box.state.moveDown = 1;
+			incBgInd();
+		}
+	}
+
+	if ((counter % box.slownessSize) == 0)
+	{
+		if (box.state.grow == 1)
+			box.state.size += box.speed;
+		else
+			box.state.size -= box.speed;
+
+		if (box.state.size >= box.maxSize) {
+			box.state.size -= (box.speed * 2);
+			box.state.grow = 0;
+		}
+		else if (box.state.size <= box.minSize) {
+			box.state.size += (box.speed * 2);
+			box.state.grow = 1;
+		}
+	}
+}
+
 void _stageDraw(void)
 {
 	// Start RCP instructions Over Again
 	initRCP();
 
 	// Wipe the background with a color
-	ClearBackground(color_bg.r, color_bg.g, color_bg.b);
+	ClearBackground(bg.color.r, bg.color.g, bg.color.b);
 
 	// Draw the rectangle
 	gDPSetCycleType(glistp++, G_CYC_FILL);// Very fast "fill mode"
 
 	// Limitation of fill is that is must use GPACK_RGBA5551 or GPACK_ZDZ and be in "Fill Mode"
-	gDPSetFillColor(glistp++, (GPACK_RGBA5551(color_rect.r, color_rect.g, color_rect.b, 1) << 16 | GPACK_RGBA5551(color_rect.r, color_rect.g, color_rect.b, 1)));
-	gDPFillRectangle(glistp++, x - rectSize, y - rectSize, x + rectSize, y + rectSize);
+	gDPSetFillColor(glistp++,
+		(GPACK_RGBA5551(box.state.color.r, box.state.color.g, box.state.color.b, 1) << 16 |
+			GPACK_RGBA5551(box.state.color.r, box.state.color.g, box.state.color.b, 1)));
 
-	gDPSetFillColor(glistp++, (GPACK_RGBA5551(color_bg.r, color_bg.g, color_bg.b, 1) << 16 | GPACK_RGBA5551(color_bg.r, color_bg.g, color_bg.b, 1)));
-	gDPFillRectangle(glistp++, (x - rectSize) + rectThickness, (y - rectSize) + rectThickness, (x + rectSize) - rectThickness, (y + rectSize) - rectThickness);
+	gDPFillRectangle(glistp++,
+		box.state.x - box.state.size,
+		box.state.y - box.state.size,
+		box.state.x + box.state.size,
+		box.state.y + box.state.size);
+
+	gDPSetFillColor(glistp++,
+		(GPACK_RGBA5551(bg.color.r, bg.color.g, bg.color.b, 1) << 16 |
+			GPACK_RGBA5551(bg.color.r, bg.color.g, bg.color.b, 1)));
+
+	gDPFillRectangle(glistp++,
+		(box.state.x - box.state.size) + box.thickness,
+		(box.state.y - box.state.size) + box.thickness,
+		(box.state.x + box.state.size) - box.thickness,
+		(box.state.y + box.state.size) - box.thickness);
 
 	// Draw Spiral Centered
-	drawSpiral(x, y);
+	drawSpiral(box.state.x, box.state.y);
 
 	// Syncronize the RCP and CPU
 	gDPFullSync(glistp++);
@@ -276,38 +332,13 @@ void _stageDraw(void)
 	nuGfxTaskStart(glist, (s32)(glistp - glist) * sizeof(Gfx), NU_GFX_UCODE_F3DEX, NU_SC_SWAPBUFFER);
 }
 
-/*=================================
-		   ClearBackground
- Wipe the background with a color
-=================================*/
-
-static void ClearBackground(u8 r, u8 g, u8 b)
+void _stageDestruct()
 {
-	gDPSetCycleType(glistp++, G_CYC_FILL);
-	gDPSetDepthImage(glistp++, nuGfxZBuffer); // nuGfxZBuffer is Nusys’ Z-Buffer 
-	gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WD, nuGfxZBuffer);
-	gDPSetFillColor(glistp++, (GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0)));
-	gDPFillRectangle(glistp++, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
-	gDPPipeSync(glistp++);
 
-	// Specify the RDP Cycle type
-	gDPSetCycleType(glistp++, G_CYC_FILL);
-
-	// Specify the color type
-	// Apparently takes a virtual address so we convert it from a physical address
-	gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WD, osVirtualToPhysical(nuGfxCfb_ptr));
-
-	// Specify the color
-	gDPSetFillColor(glistp++, (GPACK_RGBA5551(r, g, b, 1) << 16 | GPACK_RGBA5551(r, g, b, 1)));
-
-	// Draw a rectangle to the screen
-	gDPFillRectangle(glistp++, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
-
-	// Resyncronize for the next display list task
-	gDPPipeSync(glistp++);
 }
 
 // Register interface functions
+// These are automatically called on demand and as needed
 struct StageInterface stageStartup = {
 	_stageInit,
 	_stageUpdate,

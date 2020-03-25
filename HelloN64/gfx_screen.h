@@ -12,5 +12,7 @@
 	#define SCREEN_HT   288
 #endif
 
+#define SCREEN_CENTER_X (SCREEN_WD / 2)
+#define SCREEN_CENTER_Y (SCREEN_HT / 2)
 
 #endif // ! GFX_SCREEN
