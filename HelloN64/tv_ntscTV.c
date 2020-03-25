@@ -2,12 +2,12 @@
 
 #include <nusys.h>
 
-void tv_PreNmi()
+void tvPreNmi()
 {
 
 }
 
-void tv_Init()
+void tvInit()
 {
     // 320x240
     // (L)ow-Resolution, (A)nti-Aliasing, (N)on-Interlaced, (1)6-bit

@@ -7,9 +7,10 @@
 #include <nusys.h>
 #include "gfx_screen.h"
 #include "spiral.h"
-#include "controllerState.h"
+#include "controller_state.h"
 #include "gfx_glist.h"
 #include "gfx_basis.h"
+#include "stage_manager.h"
 
 /*=================================
 			 Prototypes
@@ -80,10 +81,20 @@ static u8 rectInd = 0;
 		Initialize the stage
 =================================*/
 
-void stage00_init(void)
+void _stageInit(void)
 {
 	color_bg = color_list[bgInd];
 	color_rect = color_list[rectInd];
+}
+
+/*=================================
+			stage00_destruct
+		Destruct The Stage
+=================================*/
+
+void _stageDestruct()
+{
+	
 }
 
 /*=================================
@@ -109,10 +120,10 @@ void incBgInd()
 	color_bg = color_list[bgInd];
 }
 
-void stage00_update(void)
+void _stageUpdate(void)
 {
 	// Get controller input
-	controller_refreshButtonState();
+	controllerRefreshButtonState();
 
 	// Counter always counts up and overflows back to zero
 	counter++;
@@ -234,7 +245,7 @@ void drawSpiral(int x, int y)
 	gDPPipeSync(glistp++);
 }
 
-void stage00_draw(void)
+void _stageDraw(void)
 {
 	// Start RCP instructions Over Again
 	initRCP();
@@ -295,3 +306,11 @@ static void ClearBackground(u8 r, u8 g, u8 b)
 	// Resyncronize for the next display list task
 	gDPPipeSync(glistp++);
 }
+
+// Register interface functions
+struct StageInterface stageStartup = {
+	_stageInit,
+	_stageUpdate,
+	_stageDraw,
+	_stageDestruct
+};

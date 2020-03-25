@@ -1,5 +1,5 @@
 #include <nusys.h>
-#include "stageManager.h"
+#include "stage_manager.h"
 
 /*=================================
           vsyncCallback
@@ -16,11 +16,11 @@ it has run out of instructions, it
 void onVSync(int pendingTaskCount)
 {
     // Update the stage throughout
-    stage_update();
+    curStage.stageUpdate();
 
     // If we've run out of tasks, draw the stage
     // I'm assuming this means transmit a new batch of instructions
     // because the previous batch has completed transmitting and executing.
     if (pendingTaskCount < 1)
-        stage_draw();
+        curStage.stageDraw();
 }

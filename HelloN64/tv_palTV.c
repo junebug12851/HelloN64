@@ -2,12 +2,12 @@
 
 #include <nusys.h>
 
-void tv_PreNmi()
+void tvPreNmi()
 {
     
 }
 
-void tv_Init()
+void tvInit()
 {
     // Set video mode to Full-Screen PAL
     // 320x288

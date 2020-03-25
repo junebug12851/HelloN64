@@ -2,12 +2,12 @@
 
 #include <nusys.h>
 
-void tv_PreNmi()
+void tvPreNmi()
 {
     
 }
 
-void tv_Init()
+void tvInit()
 {
     // Nothing fancy here, just set to brazilian format
     // 320x240

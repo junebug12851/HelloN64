@@ -6,5 +6,5 @@ void onPreNmi()
 {
     // This calls the associated preNmi for the compiled TV format
     // if there is one
-    tv_PreNmi();
+    tvPreNmi();
 }
