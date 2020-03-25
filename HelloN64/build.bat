@@ -38,8 +38,8 @@ cd..
 cd..
 
 :: 1st Build: NTSC
-set TVFORMAT=NTSC_TV
-set gccsw=-mips3 -mgp32 -mfp32 -funsigned-char -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -D%TVFORMAT%
+set TVFORMAT=NTSC
+set gccsw=-mips3 -mgp32 -mfp32 -funsigned-char -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -D%TVFORMAT%_TV
 make
 
 :: Move Build Artifacts
@@ -48,8 +48,8 @@ move /-y *.out "build_ntsc\artifacts\" >nul
 move /-y *.n64 "build_ntsc\" >nul
 
 :: 2nd Build: PAL
-set TVFORMAT=PAL_TV
-set gccsw=-mips3 -mgp32 -mfp32 -funsigned-char -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -D%TVFORMAT%
+set TVFORMAT=PAL
+set gccsw=-mips3 -mgp32 -mfp32 -funsigned-char -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -D%TVFORMAT%_TV
 make
 
 :: Move Build Artifacts
@@ -58,8 +58,8 @@ move /-y *.out "build_pal\artifacts\" >nul
 move /-y *.n64 "build_pal\" >nul
 
 :: 3rd Build: MPAL
-set TVFORMAT=MPAL_TV
-set gccsw=-mips3 -mgp32 -mfp32 -funsigned-char -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -D%TVFORMAT%
+set TVFORMAT=MPAL
+set gccsw=-mips3 -mgp32 -mfp32 -funsigned-char -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -D%TVFORMAT%_TV
 make
 
 :: Move Build Artifacts
