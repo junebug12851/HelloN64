@@ -236,11 +236,8 @@ void drawSpiral(int x, int y)
 
 void stage00_draw(void)
 {
-	// Assign our glist pointer to our glist array for ease of access
-	glistp = glist;
-
-	// Initialize the RCP
-	RCPInit(glistp);
+	// Start RCP instructions Over Again
+	initRCP();
 
 	// Wipe the background with a color
 	ClearBackground(color_bg.r, color_bg.g, color_bg.b);

@@ -3,6 +3,7 @@
 
 #include <nusys.h>
 
-void RCPInit(Gfx* glistp);
+void baseRCP(Gfx* glistp);
+void initRCP();
 
 #endif

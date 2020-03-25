@@ -14,13 +14,13 @@
 =================================*/
 
 // Initialize the game camera
-static Vp viewport = {
+Vp viewport = {
   SCREEN_WD * 2, SCREEN_HT * 2, G_MAXZ, 0,
   SCREEN_WD * 2, SCREEN_HT * 2, G_MAXZ, 0,
 };
 
 // Initialize the RSP
-Gfx rspinit_dl[] = {
+Gfx baseRSP[] = {
     // Set viewport measurements
     gsSPViewport(&viewport),
 
@@ -37,7 +37,7 @@ Gfx rspinit_dl[] = {
 };
 
 // Initialize the RDP
-Gfx rdpinit_dl[] = {
+Gfx baseRDP[] = {
     // 1 Pixel per machine cycle
     gsDPSetCycleType(G_CYC_1CYCLE),
 
@@ -66,19 +66,28 @@ Gfx rdpinit_dl[] = {
 };
 
 /*=================================
-              RCPInit
- Prepare the RCP for incoming work
+              BaseRCP
+ Basically inserts base RCP instructions
 =================================*/
 
-void RCPInit(Gfx* glistp)
+void baseRCP(Gfx* glistp)
 {
     // Set the segment register
     // Sets base address and segment register
     gSPSegment(glistp++, 0, 0);
 
     // Execute our RSP Display List
-    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(rspinit_dl));
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(baseRSP));
 
     // Execute our RDP Display List
-    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(rdpinit_dl));
+    gSPDisplayList(glistp++, OS_K0_TO_PHYSICAL(baseRDP));
+}
+
+void initRCP()
+{
+    // Restart the glist pointer to the beginning
+    glistp = glist;
+
+    // Fill with base commands
+    baseRCP(glistp);
 }
