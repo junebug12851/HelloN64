@@ -27,6 +27,9 @@ If all is set correctly you just double click `build.bat` and everything will ru
 artifacts in the `out` folder. You'll need a way to play it using either an emulator or the real machine. There's
 lots of help out there for that.
 
+In `build.bat` there is a define that defaults to `NTSC_TV`, to correctly compile it must compile for a format
+however other options are `PAL_TV` and `MPAL_TV` which will all compile for that format.
+
 ## Why Visual Studio?
 
 You may wonder why I'm using `Visual Studio 2019 Community Edition`. The reason is because I want all the modern

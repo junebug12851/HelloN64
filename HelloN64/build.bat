@@ -19,7 +19,7 @@ set ERROR=0
 :: Ultra folder (NO QUOTATIONS)
 set ROOT=C:\n64\n64sdk\ultra
 :: Emulator ROM folder (QUOTATIONS REQUIRED)
-set ROMFOLDER=""
+set ROMFOLDER="C:\"
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::                          Color Function Setup                                ::
@@ -83,10 +83,9 @@ goto main
 call :PainText 09 "Setting up make for the N64"
 set gccdir=%ROOT%\gcc
 set PATH=%ROOT%\gcc\mipse\bin;%ROOT%\usr\sbin
-set gccsw=-mips3 -mgp32 -mfp32 -funsigned-char -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__
+set gccsw=-mips3 -mgp32 -mfp32 -funsigned-char -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -DNTSC_TV
 set n64align=on
 set GCC_CELF=ON
-
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::                           Cleanup Old Files                                  ::

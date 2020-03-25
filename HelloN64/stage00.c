@@ -7,6 +7,7 @@
 #include  <nusys.h>
 #include  "config.h"
 #include  "spiral.h"
+#include "controllerState.h"
 
 /*=================================
 			 Prototypes
@@ -57,7 +58,7 @@ static int y = SCREEN_HT / 2;
 static u8 rectMinSize = 10;
 static u8 rectSize = 30;
 static u8 rectMaxSize = 40;
-static u8 rectThickness = 5;
+static u8 rectThickness = 2;
 
 static u8 moveRight = 1;
 static u8 moveDown = 0;
@@ -109,7 +110,7 @@ void incBgInd()
 void stage00_update(void)
 {
 	// Get controller input
-	nuContDataGetExAll(contdata);
+	controller_refreshButtonState();
 
 	// Counter always counts up and overflows back to zero
 	counter++;
