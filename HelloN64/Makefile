@@ -1,6 +1,6 @@
 N64KITDIR	= c:/nintendo/n64kit
 
-TARGET		= HelloN64
+TARGET		= HelloN64_$(TVFORMAT)
 CODEFILES   = $(wildcard *.c)
 
 ############################################################################

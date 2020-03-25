@@ -357,4 +357,6 @@ MigrationBackup/
 .ionide/
 
 #### Custom
-HelloN64/out/*
+build_mpal/
+build_ntsc/
+build_pal/
