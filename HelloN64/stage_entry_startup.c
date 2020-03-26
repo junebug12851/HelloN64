@@ -108,11 +108,23 @@ u16 counter = 0;
 
 static void ClearBackground(u8 r, u8 g, u8 b)
 {
+	// Clear Z-Buffer
+	// Enter Fill Mode
 	gDPSetCycleType(glistp++, G_CYC_FILL);
+
+	// Select the Z-Buffer to be nuSys Z-Buffer
 	gDPSetDepthImage(glistp++, nuGfxZBuffer); // nuGfxZBuffer is Nusys’ Z-Buffer 
+
+	// Set attributes on the Z-Buffer
 	gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WD, nuGfxZBuffer);
+
+	// Set to erase the Z-Buffer, the values below are special to clearing out the Z-Buffer
 	gDPSetFillColor(glistp++, (GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0)));
+
+	// Wipe-Out Z-Buffer
 	gDPFillRectangle(glistp++, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
+
+	// Stop here and wait until GPU is cleared out
 	gDPPipeSync(glistp++);
 
 	// Specify the RDP Cycle type
