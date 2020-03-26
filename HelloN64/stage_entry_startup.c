@@ -319,6 +319,8 @@ void _stageDraw(void)
 		(box.state.x + box.state.size) - box.thickness,
 		(box.state.y + box.state.size) - box.thickness);
 
+	gDPPipeSync(glistp++);
+
 	// Draw Spiral Centered
 	drawSpiral(box.state.x, box.state.y);
 
