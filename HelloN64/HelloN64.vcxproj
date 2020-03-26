@@ -146,18 +146,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="graphic.c" />
+    <ClCompile Include="controller_state.c" />
+    <ClCompile Include="gfx_basics.c" />
+    <ClCompile Include="gfx_glist.c" />
+    <ClCompile Include="gfx_basis.c" />
     <ClCompile Include="main.c" />
-    <ClCompile Include="mpalTV.c" />
-    <ClCompile Include="ntscTV.c" />
-    <ClCompile Include="palTV.c" />
+    <ClCompile Include="tv_mpalTV.c" />
+    <ClCompile Include="tv_ntscTV.c" />
+    <ClCompile Include="tv_palTV.c" />
+    <ClCompile Include="onPreNmi.c" />
+    <ClCompile Include="onVsync.c" />
     <ClCompile Include="spiral.c" />
-    <ClCompile Include="stage00.c" />
+    <ClCompile Include="stage_entry_startup.c" />
+    <ClCompile Include="stage_manager.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="config.h" />
+    <ClInclude Include="controller_state.h" />
+    <ClInclude Include="gfx_basics.h" />
+    <ClInclude Include="gfx_basis.h" />
+    <ClInclude Include="gfx_glist.h" />
+    <ClInclude Include="gfx_materialColor.c" />
+    <ClInclude Include="gfx_materialColor.h" />
+    <ClInclude Include="gfx_screen.h" />
+    <ClInclude Include="onEvents.h" />
+    <ClInclude Include="stage_list.h" />
+    <ClInclude Include="tv.h" />
     <ClInclude Include="spiral.h" />
-    <ClInclude Include="stages.h" />
+    <ClInclude Include="stage_manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

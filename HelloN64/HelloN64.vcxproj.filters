@@ -10,51 +10,102 @@
     <Filter Include="src\gfx">
       <UniqueIdentifier>{2fbc57d5-d24b-4dc7-a809-045c1583f6dd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\common">
-      <UniqueIdentifier>{58cb2470-6409-433f-8a6b-f0c2a462d02a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\assets">
       <UniqueIdentifier>{a72e3b6e-0bb2-47e3-b8ae-b0127ff0a14e}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\stages">
       <UniqueIdentifier>{0a4ea970-0818-471e-844e-92bf1b85d89a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\boot\hacks">
+    <Filter Include="src\events">
+      <UniqueIdentifier>{8d7d4cb9-3045-4e84-a64b-66d37106f4a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\controllers">
+      <UniqueIdentifier>{7609542e-52cd-46bb-956f-558840e9d2ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\boot\tvFormat">
       <UniqueIdentifier>{27954393-09fa-4139-b73b-0daac4be79ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\stages\entries">
+      <UniqueIdentifier>{5aa9ce60-e247-4c91-8bb5-1823e0cd1f46}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
       <Filter>src\boot</Filter>
     </ClCompile>
-    <ClCompile Include="graphic.c">
-      <Filter>src\gfx</Filter>
-    </ClCompile>
     <ClCompile Include="spiral.c">
       <Filter>src\assets</Filter>
     </ClCompile>
-    <ClCompile Include="stage00.c">
+    <ClCompile Include="onVsync.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="onPreNmi.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx_basis.c">
+      <Filter>src\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx_glist.c">
+      <Filter>src\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="tv_mpalTV.c">
+      <Filter>src\boot\tvFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="tv_ntscTV.c">
+      <Filter>src\boot\tvFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="tv_palTV.c">
+      <Filter>src\boot\tvFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="stage_manager.c">
       <Filter>src\stages</Filter>
     </ClCompile>
-    <ClCompile Include="palTV.c">
-      <Filter>src\boot\hacks</Filter>
+    <ClCompile Include="stage_entry_startup.c">
+      <Filter>src\stages\entries</Filter>
     </ClCompile>
-    <ClCompile Include="mpalTV.c">
-      <Filter>src\boot\hacks</Filter>
+    <ClCompile Include="controller_state.c">
+      <Filter>src\controllers</Filter>
     </ClCompile>
-    <ClCompile Include="ntscTV.c">
-      <Filter>src\boot\hacks</Filter>
+    <ClCompile Include="gfx_basics.c">
+      <Filter>src\gfx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="config.h">
-      <Filter>src\common</Filter>
-    </ClInclude>
     <ClInclude Include="spiral.h">
       <Filter>src\assets</Filter>
     </ClInclude>
-    <ClInclude Include="stages.h">
+    <ClInclude Include="onEvents.h">
+      <Filter>src\events</Filter>
+    </ClInclude>
+    <ClInclude Include="gfx_basis.h">
+      <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="gfx_glist.h">
+      <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="gfx_screen.h">
+      <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="tv.h">
+      <Filter>src\boot\tvFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="stage_list.h">
       <Filter>src\stages</Filter>
+    </ClInclude>
+    <ClInclude Include="stage_manager.h">
+      <Filter>src\stages</Filter>
+    </ClInclude>
+    <ClInclude Include="controller_state.h">
+      <Filter>src\controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="gfx_materialColor.c">
+      <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="gfx_materialColor.h">
+      <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="gfx_basics.h">
+      <Filter>src\gfx</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
