@@ -81,7 +81,7 @@ struct Box box = {
 	10, // Min
 	40, // Max
 	2,  // Thickness
-	2,  // Speed
+	10, // Speed
 	5,  // Slowness Y
 	8,  // Slowness Size
 	{
@@ -128,11 +128,6 @@ void incBgInd()
 
 	bg.color = materialColorList[bg.colorInd];
 }
-
-/*=================================
-			stage00_draw
-		   Draw the stage
-=================================*/
 
 void drawSpiral(int x, int y)
 {
@@ -200,66 +195,85 @@ void _stageInit(void)
 
 void _stageUpdate(void)
 {
+	struct MotionReturn joyData;
+	int x;
+	int y;
+
 	// Get controller input
 	controllerRefreshButtonState();
 
+	joyData = controllerJoyMotion(0);
+	x = box.state.x + (joyData.x * box.speed);
+	y = box.state.y + (joyData.y * box.speed);
+
+	if (x >= (SCREEN_WD - box.state.size) ||
+		x <= (box.state.size))
+		x = box.state.x;
+
+	if (y >= (SCREEN_HT - box.state.size) ||
+		y <= (box.state.size))
+		y = box.state.y;
+
+	box.state.x = x;
+	box.state.y = y;
+
 	// Counter always counts up and overflows back to zero
-	counter++;
+	//counter++;
 
-	// Move in direction
-	if (box.state.moveRight == 1)
-		box.state.x += box.speed;
-	else
-		box.state.x -= box.speed;
+	//// Move in direction
+	//if (box.state.moveRight == 1)
+	//	box.state.x += box.speed;
+	//else
+	//	box.state.x -= box.speed;
 
-	// Check for boundraries and adjust accordingly
-	if (box.state.x >= (SCREEN_WD - box.state.size)) {
-		box.state.x -= (box.speed * 2);
-		box.state.moveRight = 0;
-		incRectInd();
-	}
-	else if (box.state.x <= (box.state.size)) {
-		box.state.x += (box.speed * 2);
-		box.state.moveRight = 1;
-		incRectInd();
-	}
+	//// Check for boundraries and adjust accordingly
+	//if (box.state.x >= (SCREEN_WD - box.state.size)) {
+	//	box.state.x -= (box.speed * 2);
+	//	box.state.moveRight = 0;
+	//	incRectInd();
+	//}
+	//else if (box.state.x <= (box.state.size)) {
+	//	box.state.x += (box.speed * 2);
+	//	box.state.moveRight = 1;
+	//	incRectInd();
+	//}
 
-	// Move up/down in intervals
-	if ((counter % box.slownessY) == 0)
-	{
-		if (box.state.moveDown == 1)
-			box.state.y += box.speed;
-		else
-			box.state.y -= box.speed;
+	//// Move up/down in intervals
+	//if ((counter % box.slownessY) == 0)
+	//{
+	//	if (box.state.moveDown == 1)
+	//		box.state.y += box.speed;
+	//	else
+	//		box.state.y -= box.speed;
 
-		if (box.state.y >= (SCREEN_HT - box.state.size)) {
-			box.state.y -= (box.speed * 2);
-			box.state.moveDown = 0;
-			incBgInd();
-		}
-		else if (box.state.y <= (box.state.size)) {
-			box.state.y += (box.speed * 2);
-			box.state.moveDown = 1;
-			incBgInd();
-		}
-	}
+	//	if (box.state.y >= (SCREEN_HT - box.state.size)) {
+	//		box.state.y -= (box.speed * 2);
+	//		box.state.moveDown = 0;
+	//		incBgInd();
+	//	}
+	//	else if (box.state.y <= (box.state.size)) {
+	//		box.state.y += (box.speed * 2);
+	//		box.state.moveDown = 1;
+	//		incBgInd();
+	//	}
+	//}
 
-	if ((counter % box.slownessSize) == 0)
-	{
-		if (box.state.grow == 1)
-			box.state.size += box.speed;
-		else
-			box.state.size -= box.speed;
+	//if ((counter % box.slownessSize) == 0)
+	//{
+	//	if (box.state.grow == 1)
+	//		box.state.size += box.speed;
+	//	else
+	//		box.state.size -= box.speed;
 
-		if (box.state.size >= box.maxSize) {
-			box.state.size -= (box.speed * 2);
-			box.state.grow = 0;
-		}
-		else if (box.state.size <= box.minSize) {
-			box.state.size += (box.speed * 2);
-			box.state.grow = 1;
-		}
-	}
+	//	if (box.state.size >= box.maxSize) {
+	//		box.state.size -= (box.speed * 2);
+	//		box.state.grow = 0;
+	//	}
+	//	else if (box.state.size <= box.minSize) {
+	//		box.state.size += (box.speed * 2);
+	//		box.state.grow = 1;
+	//	}
+	//}
 }
 
 void _stageDraw(void)
@@ -293,17 +307,9 @@ void _stageDraw(void)
 	// Draw Spiral Centered
 	drawSpiral(box.state.x, box.state.y);
 
-	// Syncronize the RCP and CPU
-	// Signals the end of a frame
-	// Basically tell the GPU to notify  us that it's done and shut down
-	gDPFullSync(glistp++);
-
-	// Specify that our display list has ended
-	gSPEndDisplayList(glistp++);
-
-	// Start the display task
-	// Basically send all the instructions over to the gpu
-	nuGfxTaskStart(glist, (s32)(glistp - glist) * sizeof(Gfx), NU_GFX_UCODE_F3DEX, NU_SC_SWAPBUFFER);
+	// Mark us done with the gfx, this inserts some final instructions and then
+	// transmits it to the gpu
+	gfxDone();
 }
 
 void _stageDestruct()

@@ -53,3 +53,18 @@ void clearAll(u8 r, u8 g, u8 b)
 	clearZBuffer();
 	clearScreen(r, g, b);
 }
+
+void gfxDone()
+{
+	// Syncronize the RCP and CPU
+	// Signals the end of a frame
+	// Basically tell the GPU to notify  us that it's done and shut down
+	gDPFullSync(glistp++);
+
+	// Specify that our display list has ended
+	gSPEndDisplayList(glistp++);
+
+	// Start the display task
+	// Basically send all the instructions over to the gpu
+	nuGfxTaskStart(glist, (s32)(glistp - glist) * sizeof(Gfx), NU_GFX_UCODE_F3DEX, NU_SC_SWAPBUFFER);
+}
