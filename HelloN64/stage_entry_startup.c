@@ -12,6 +12,7 @@
 #include "gfx_basis.h"
 #include "stage_manager.h"
 #include "gfx_materialColor.h"
+#include "gfx_basics.h"
 
 /*=================================
 		 Global Variables
@@ -105,44 +106,6 @@ u16 counter = 0;
 		   ClearBackground
  Wipe the background with a color
 =================================*/
-
-static void ClearBackground(u8 r, u8 g, u8 b)
-{
-	// Clear Z-Buffer
-	// Enter Fill Mode
-	gDPSetCycleType(glistp++, G_CYC_FILL);
-
-	// Select the Z-Buffer to be nuSys Z-Buffer
-	gDPSetDepthImage(glistp++, nuGfxZBuffer); // nuGfxZBuffer is Nusys’ Z-Buffer 
-
-	// Set attributes on the Z-Buffer
-	gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WD, nuGfxZBuffer);
-
-	// Set to erase the Z-Buffer, the values below are special to clearing out the Z-Buffer
-	gDPSetFillColor(glistp++, (GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0)));
-
-	// Wipe-Out Z-Buffer
-	gDPFillRectangle(glistp++, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
-
-	// Stop here and wait until GPU is cleared out
-	gDPPipeSync(glistp++);
-
-	// Specify the RDP Cycle type
-	gDPSetCycleType(glistp++, G_CYC_FILL);
-
-	// Specify the color type
-	// Apparently takes a virtual address so we convert it from a physical address
-	gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WD, osVirtualToPhysical(nuGfxCfb_ptr));
-
-	// Specify the color
-	gDPSetFillColor(glistp++, (GPACK_RGBA5551(r, g, b, 1) << 16 | GPACK_RGBA5551(r, g, b, 1)));
-
-	// Draw a rectangle to the screen
-	gDPFillRectangle(glistp++, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
-
-	// Resyncronize for the next display list task
-	gDPPipeSync(glistp++);
-}
 
 // Cycle forward and wrap-around box color
 void incRectInd()
@@ -305,44 +268,41 @@ void _stageDraw(void)
 	initRCP();
 
 	// Wipe the background with a color
-	ClearBackground(bg.color.r, bg.color.g, bg.color.b);
+	clearAll(bg.color.r, bg.color.g, bg.color.b);
 
-	// Draw the rectangle
-	gDPSetCycleType(glistp++, G_CYC_FILL);// Very fast "fill mode"
-
-	// Limitation of fill is that is must use GPACK_RGBA5551 or GPACK_ZDZ and be in "Fill Mode"
-	gDPSetFillColor(glistp++,
-		(GPACK_RGBA5551(box.state.color.r, box.state.color.g, box.state.color.b, 1) << 16 |
-			GPACK_RGBA5551(box.state.color.r, box.state.color.g, box.state.color.b, 1)));
-
-	gDPFillRectangle(glistp++,
+	// Draw the rectangle first
+	clearArea(
+		box.state.color.r, 
+		box.state.color.g, 
+		box.state.color.b,
 		box.state.x - box.state.size,
 		box.state.y - box.state.size,
 		box.state.x + box.state.size,
 		box.state.y + box.state.size);
 
-	gDPSetFillColor(glistp++,
-		(GPACK_RGBA5551(bg.color.r, bg.color.g, bg.color.b, 1) << 16 |
-			GPACK_RGBA5551(bg.color.r, bg.color.g, bg.color.b, 1)));
-
-	gDPFillRectangle(glistp++,
+	// Fill the inside with same fill color
+	clearArea(
+		bg.color.r,
+		bg.color.g, 
+		bg.color.b,
 		(box.state.x - box.state.size) + box.thickness,
 		(box.state.y - box.state.size) + box.thickness,
 		(box.state.x + box.state.size) - box.thickness,
 		(box.state.y + box.state.size) - box.thickness);
 
-	gDPPipeSync(glistp++);
-
 	// Draw Spiral Centered
 	drawSpiral(box.state.x, box.state.y);
 
 	// Syncronize the RCP and CPU
+	// Signals the end of a frame
+	// Basically tell the GPU to notify  us that it's done and shut down
 	gDPFullSync(glistp++);
 
 	// Specify that our display list has ended
 	gSPEndDisplayList(glistp++);
 
 	// Start the display task
+	// Basically send all the instructions over to the gpu
 	nuGfxTaskStart(glist, (s32)(glistp - glist) * sizeof(Gfx), NU_GFX_UCODE_F3DEX, NU_SC_SWAPBUFFER);
 }
 
