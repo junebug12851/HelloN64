@@ -81,15 +81,17 @@ void gfxDone()
 // All the others
 void gfxLoadFontTilesetBank(u8 fontBank)
 {
+	u8* fontTilemap = font_tilemap_1;
+	if (fontBank > 0)
+		fontTilemap = font_tilemap_2;
+
 	// Load RGBA16 LUT for 4-bit textures into TMEM at slot 0
 	gDPSetTextureLUT(glistp++, G_TT_RGBA16);
 	gDPLoadTLUT_pal16(glistp++, 0, font_tilemap_lut);
 
 	// Load LUT Tilemap Bank
 	gDPLoadTextureBlock_4b(glistp++,
-		(fontBank == 0)
-			? font_tilemap_1
-			: font_tilemap_2, 				// timg
+		fontTilemap, 				// timg
 		G_IM_FMT_RGBA, 						// fmt
 		FONT_TILEMAP_PART_WIDTH_PIXELS,		// Tilemap Width
 		FONT_TILEMAP_PART_HEIGHT_PIXELS,	// Tilemap Height
