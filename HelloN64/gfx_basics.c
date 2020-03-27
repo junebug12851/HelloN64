@@ -1,6 +1,10 @@
 #include <nusys.h>
 #include "gfx_glist.h"
 #include "gfx_screen.h"
+#include "font_tilemap.h"
+#include "font_tilemap_conversion.h"
+
+u8 fontTilesetLoaded = 0;
 
 void clearZBuffer()
 {
@@ -67,4 +71,109 @@ void gfxDone()
 	// Start the display task
 	// Basically send all the instructions over to the gpu
 	nuGfxTaskStart(glist, (s32)(glistp - glist) * sizeof(Gfx), NU_GFX_UCODE_F3DEX, NU_SC_SWAPBUFFER);
+}
+
+// Loads Font Tileset X into TMEM
+// This is more efficient than loading a single tile
+// 0 = 
+// A-Z a-z 0-9 . " "
+// 1 =
+// All the others
+void gfxLoadFontTilesetBank(u8 fontBank)
+{
+	// Load RGBA16 LUT for 4-bit textures into TMEM at slot 0
+	gDPSetTextureLUT(glistp++, G_TT_RGBA16);
+	gDPLoadTLUT_pal16(glistp++, 0, font_tilemap_lut);
+
+	// Load LUT Tilemap Bank
+	gDPLoadTextureBlock_4b(glistp++,
+		(fontBank == 0)
+			? font_tilemap_1
+			: font_tilemap_2, 				// timg
+		G_IM_FMT_RGBA, 						// fmt
+		FONT_TILEMAP_PART_WIDTH_PIXELS,		// Tilemap Width
+		FONT_TILEMAP_PART_HEIGHT_PIXELS,	// Tilemap Height
+		0, 					// PAL
+		G_TX_WRAP, 			// CM S
+		G_TX_WRAP, 			// CM T
+		G_TX_NOMASK, 		// Mask S
+		G_TX_NOMASK, 		// Mask T
+		G_TX_NOLOD, 		// Shift S
+		G_TX_NOLOD);		// Shift T
+
+	gDPPipeSync(glistp++);
+	gDPSetTextureLUT(glistp++, G_TT_NONE);
+
+	fontTilesetLoaded = fontBank + 1;
+}
+
+void gfxPrintFontTile(int x, int y, u8 tileID)
+{
+	// There is a method to the layout of tiles
+	// Each row is exactly 16 tiles 0x0 - 0xF
+	// This was designed for fast lookup on a Gameboy originally
+	// and to perfectly fit into the Gameboy's lower-third memory as a bonus
+	u8 row = tileID / FONT_TILE_SIZE_RADIX;
+	u8 col = tileID % FONT_TILE_SIZE_RADIX;
+
+	// A hack
+	// Tileset 0: Not Loaded
+	// Tileset 1 or 2: Needs Tileset 1 or 2
+	// Tileset 2 starts at row index 4
+	// true == 1, Check for tileset 2 or 1 and add 1 to make it a vlid requires number
+	//u8 requiresTileset = (row >= FONT_TILEMAP_PART_HEIGHT_TILES) + 1;
+	u8 requiresTileset = 0;
+
+	// Offset so we can pick out the tile from within the bank
+	u8 localTileID = (row >= FONT_TILEMAP_PART_HEIGHT_TILES)
+		? tileID - FONT_TILE_PART_COUNT
+		: tileID;
+
+	u8 localRow = localTileID / FONT_TILE_SIZE_RADIX;
+	u8 localCol = localTileID % FONT_TILE_SIZE_RADIX;
+
+	u8 localX = localRow * FONT_TILE_SIZE_PIXELS;
+	u8 localY = localCol * FONT_TILE_SIZE_PIXELS;
+
+	if (row >= FONT_TILEMAP_PART_HEIGHT_TILES)
+		requiresTileset = 2;
+	else
+		requiresTileset = 1;
+
+	// 1 Cycle as we need Z-Buffer but don't need any particular special effects
+	// Do a hard paste over whatevers there
+	// Textures with alpha coloring
+	// For z-value, don't compare per-pixel, just the whole primitive
+	// Give a Z-value of 10 (Min increments of 8)
+	// No texture perspective, not a 3D world
+	gDPSetCycleType(glistp++, G_CYC_1CYCLE);
+	gDPSetCombineMode(glistp++, G_CC_DECALRGBA, G_CC_DECALRGBA);
+	gDPSetRenderMode(glistp++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
+	gDPSetDepthSource(glistp++, G_ZS_PRIM);
+	gDPSetPrimDepth(glistp++, 10, 0);
+	gDPSetTexturePersp(glistp++, G_TP_NONE);
+
+	// Load the tileset into memory if it's not already
+	if (fontTilesetLoaded != requiresTileset)
+		gfxLoadFontTilesetBank(requiresTileset - 1);
+
+	// If I understand this correctly
+	// Load a texture at the UL and BR coordinates with the size
+	// of a tile. Use calculated tile offset coordinates to load correct
+	// tile. Don't skip any pixels in the loading process
+	gSPTextureRectangle(glistp++, 
+		x << 2, y << 2,							// UL Rectangle
+		x + FONT_TILE_SIZE_PIXELS << 2,			// BR X Rectangle
+		y + FONT_TILE_SIZE_PIXELS << 2,			// BR Y Rectangle
+		G_TX_RENDERTILE,						// Descriptor Index
+		localX * FONT_TILE_SIZE_PIXELS << 5,	// Texture Coordinaate S UL
+		localY * FONT_TILE_SIZE_PIXELS << 5,	// Texture Coordinaate T UL
+		1 << 10, 1 << 10);						// Change in S/T for each X/Y
+
+	gDPPipeSync(glistp++);
+}
+
+void gfxEndPrintFont()
+{
+	fontTilesetLoaded = 0;
 }

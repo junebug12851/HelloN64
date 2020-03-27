@@ -10,6 +10,7 @@
 #include "tv.h"
 #include "onEvents.h"
 #include "controller_state.h"
+#include "font_tilemap_conversion.h"
 
 /*=================================
               Main
@@ -33,6 +34,12 @@ void mainproc(void* dummy)
 
     // Init stage manager which inits both the manager and loads up a stage
     stageManagerInit();
+
+    // Load ascii-specific font tile ids into memory associated with
+    // the ascii character they represent
+    // UTF-8 tiles have to be accessed manually
+    // This allows spedy lookup of string characters and a fast conversion
+    fontTilemapConvCacheInit();
 
     // Now finish initing the rom
 

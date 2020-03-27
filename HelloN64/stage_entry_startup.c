@@ -13,6 +13,8 @@
 #include "stage_manager.h"
 #include "gfx_materialColor.h"
 #include "gfx_basics.h"
+#include "font_tilemap.h"
+#include "font_tilemap_conversion.h"
 
 /*=================================
 		 Global Variables
@@ -305,7 +307,12 @@ void _stageDraw(void)
 		(box.state.y + box.state.size) - box.thickness);
 
 	// Draw Spiral Centered
-	drawSpiral(box.state.x, box.state.y);
+	//drawSpiral(box.state.x, box.state.y);
+
+	// Print Uppercase A followed by an Exclamation mark
+	gfxPrintFontTile(box.state.x, box.state.y, FONT_UPPER_B);
+	//gfxPrintFontTile(box.state.x + 8, box.state.y, FONT_EXCLAMATION);
+	gfxEndPrintFont();
 
 	// Mark us done with the gfx, this inserts some final instructions and then
 	// transmits it to the gpu
