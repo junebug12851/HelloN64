@@ -311,7 +311,8 @@ void _stageDraw(void)
 
 	// Print Uppercase A followed by an Exclamation mark
 	gfxPrintFontTile(box.state.x, box.state.y, FONT_UPPER_A);
-	gfxPrintFontTile(box.state.x + 8, box.state.y, FONT_EXCLAMATION);
+	gfxPrintFontTile(box.state.x + 8, box.state.y, FONT_UPPER_B);
+	gfxPrintFontTile(box.state.x + 16, box.state.y, FONT_EXCLAMATION);
 	gfxEndPrintFont();
 
 	// Mark us done with the gfx, this inserts some final instructions and then

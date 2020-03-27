@@ -3,11 +3,7 @@
 
 #include <nusys.h>
 
-// Tilemap has 2 banks
-// Bank 0 is mostly used and contains
-// A-Z a-z 0-9 . " "
-// Bank 1 is used less often and contains many other symbol tiles
-// and utf-8 tiles
+// Tilemap has 4 banks due to memory restrictions
 
 // Tile size in width and height
 #define FONT_TILE_SIZE_PIXELS 8
@@ -32,7 +28,7 @@
 
 // Single bank tilemap size in tiles
 #define FONT_TILEMAP_PART_WIDTH_TILES FONT_TILEMAP_WIDTH_TILES
-#define FONT_TILEMAP_PART_HEIGHT_TILES (FONT_TILEMAP_HEIGHT_TILES / 2)
+#define FONT_TILEMAP_PART_HEIGHT_TILES (FONT_TILEMAP_HEIGHT_TILES / 4)
 
 // Single bank tilemap size in pixels
 #define FONT_TILEMAP_PART_WIDTH_PIXELS (FONT_TILEMAP_PART_WIDTH_TILES * FONT_TILE_SIZE_PIXELS)
@@ -51,10 +47,20 @@
 extern u16 font_tilemap_lut[FONT_TILEMAP_LUT_SIZE];
 
 // Access to tilemap bank 0
+// A-Z 0-5
 extern u8 font_tilemap_1[FONT_TILEMAP_PART_ARR_SIZE];
 
 // Access to tilemap bank 1
+// 6-9 a-z . " "
 extern u8 font_tilemap_2[FONT_TILEMAP_PART_ARR_SIZE];
+
+// Access to tilemap bank 2
+// Symbols 1, mostly extended ascii
+extern u8 font_tilemap_3[FONT_TILEMAP_PART_ARR_SIZE];
+
+// Access to tilemap bank 3
+// Symbols 2, mostly ascii-art symbols
+extern u8 font_tilemap_4[FONT_TILEMAP_PART_ARR_SIZE];
 
 // With both banks combined, these are all the tiles offered
 enum {

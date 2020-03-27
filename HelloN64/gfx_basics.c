@@ -81,9 +81,14 @@ void gfxDone()
 // All the others
 void gfxLoadFontTilesetBank(u8 fontBank)
 {
+	// Load correct requested bank
 	u8* fontTilemap = font_tilemap_1;
-	if (fontBank > 0)
+	if (fontBank == 1)
 		fontTilemap = font_tilemap_2;
+	else if (fontBank == 2)
+		fontTilemap = font_tilemap_3;
+	if (fontBank == 3)
+		fontTilemap = font_tilemap_4;
 
 	// Load RGBA16 LUT for 4-bit textures into TMEM at slot 0
 	gDPSetTextureLUT(glistp++, G_TT_RGBA16);
@@ -127,20 +132,46 @@ void gfxPrintFontTile(int x, int y, u8 tileID)
 	u8 requiresTileset = 0;
 
 	// Offset so we can pick out the tile from within the bank
-	u8 localTileID = (row >= FONT_TILEMAP_PART_HEIGHT_TILES)
+	/*u8 localTileID = (row >= FONT_TILEMAP_PART_HEIGHT_TILES)
 		? tileID - FONT_TILE_PART_COUNT
-		: tileID;
+		: tileID;*/
 
-	u8 localRow = localTileID / FONT_TILE_SIZE_RADIX;
-	u8 localCol = localTileID % FONT_TILE_SIZE_RADIX;
+	u8 localTileID;
 
-	u8 localX = localRow * FONT_TILE_SIZE_PIXELS;
-	u8 localY = localCol * FONT_TILE_SIZE_PIXELS;
+	u8 localRow;
+	u8 localCol;
 
-	if (row >= FONT_TILEMAP_PART_HEIGHT_TILES)
-		requiresTileset = 2;
+	u8 localX;
+	u8 localY;
+
+	// Still a bit hardcoded
+	// @TODO calculate better for macros
+	if (row < 2)
+		localTileID = tileID - (FONT_TILE_PART_COUNT * 0);
+	else if (row < 4)
+		localTileID = tileID - (FONT_TILE_PART_COUNT * 1);
+	else if (row < 6)
+		localTileID = tileID - (FONT_TILE_PART_COUNT * 2);
 	else
+		localTileID = tileID - (FONT_TILE_PART_COUNT * 3);
+
+	localRow = localTileID / FONT_TILE_SIZE_RADIX;
+	localCol = localTileID % FONT_TILE_SIZE_RADIX;
+
+	localX = localRow * FONT_TILE_SIZE_PIXELS;
+	localY = localCol * FONT_TILE_SIZE_PIXELS;
+
+	// Sort of a cheap way to calculate the required bank number
+	// Need to be using the defines
+	// @TODO Switch to using defines and not hard-coded numbers
+	if (row < 2)
 		requiresTileset = 1;
+	else if (row < 4)
+		requiresTileset = 2;
+	else if (row < 6)
+		requiresTileset = 3;
+	else
+		requiresTileset = 4;
 
 	// 1 Cycle as we need Z-Buffer but don't need any particular special effects
 	// Do a hard paste over whatevers there
