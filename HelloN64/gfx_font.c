@@ -64,7 +64,7 @@ void gfxFontLoadTilesetBank(u8 fontBank)
 	fontTilesetLoaded = fontBank + 1;
 }
 
-void gfxFontPrintTile(int x, int y, u8 tileID)
+struct RowCol gfxFontConvertTileIdToRowCol(u8 tileID)
 {
 	// There is a method to the layout of tiles
 	// Each row is exactly 16 tiles 0x0 - 0xF
@@ -73,43 +73,17 @@ void gfxFontPrintTile(int x, int y, u8 tileID)
 	u8 row = tileID / FONT_TILE_SIZE_RADIX;
 	u8 col = tileID % FONT_TILE_SIZE_RADIX;
 
-	// A hack
-	// Tileset 0: Not Loaded
-	// Tileset 1 or 2: Needs Tileset 1 or 2
-	// Tileset 2 starts at row index 4
-	// true == 1, Check for tileset 2 or 1 and add 1 to make it a vlid requires number
-	//u8 requiresTileset = (row >= FONT_TILEMAP_PART_HEIGHT_TILES) + 1;
+	struct RowCol ret = {
+		row,col
+	};
+
+	return ret;
+}
+
+u8 gfxFontConvertRowToFontBank(u8 row)
+{
+	// 0 = Uninitialized
 	u8 requiresTileset = 0;
-
-	// Offset so we can pick out the tile from within the bank
-	/*u8 localTileID = (row >= FONT_TILEMAP_PART_HEIGHT_TILES)
-		? tileID - FONT_TILE_PART_COUNT
-		: tileID;*/
-
-	u8 localTileID;
-
-	u8 localRow;
-	u8 localCol;
-
-	u8 localX;
-	u8 localY;
-
-	// Still a bit hardcoded
-	// @TODO calculate better for macros
-	if (row < 2)
-		localTileID = tileID - (FONT_TILE_PART_COUNT * 0);
-	else if (row < 4)
-		localTileID = tileID - (FONT_TILE_PART_COUNT * 1);
-	else if (row < 6)
-		localTileID = tileID - (FONT_TILE_PART_COUNT * 2);
-	else
-		localTileID = tileID - (FONT_TILE_PART_COUNT * 3);
-
-	localRow = localTileID / FONT_TILE_SIZE_RADIX;
-	localCol = localTileID % FONT_TILE_SIZE_RADIX;
-
-	localX = localRow * FONT_TILE_SIZE_PIXELS;
-	localY = localCol * FONT_TILE_SIZE_PIXELS;
 
 	// Sort of a cheap way to calculate the required bank number
 	// Need to be using the defines
@@ -123,6 +97,62 @@ void gfxFontPrintTile(int x, int y, u8 tileID)
 	else
 		requiresTileset = 4;
 
+	return requiresTileset;
+}
+
+u8 gfxFontConvertTileIdToLocal(u8 tileID, u8 row)
+{
+	u8 localTileID = tileID;
+
+	// Still a bit hardcoded
+	// @TODO calculate better for macros
+	if (row < 2)
+		localTileID = tileID - (FONT_TILE_PART_COUNT * 0);
+	else if (row < 4)
+		localTileID = tileID - (FONT_TILE_PART_COUNT * 1);
+	else if (row < 6)
+		localTileID = tileID - (FONT_TILE_PART_COUNT * 2);
+	else
+		localTileID = tileID - (FONT_TILE_PART_COUNT * 3);
+
+	return localTileID;
+}
+
+struct Coords2D gfxFontConvertTileToCoords(u8 row, u8 col)
+{
+	int localX = row * FONT_TILE_SIZE_PIXELS;
+	int localY = col * FONT_TILE_SIZE_PIXELS;
+
+	struct Coords2D ret = {
+		localX, localY
+	};
+
+	return ret;
+}
+
+void gfxFontPrintTile(int x, int y, u8 tileID)
+{
+	u8 localTileID;
+	u8 requiresTileset;
+	struct Coords2D localXY;
+	struct RowCol wholeRowCol;
+	struct RowCol localRowCol;
+
+	// Get whole row/column
+	wholeRowCol = gfxFontConvertTileIdToRowCol(tileID);
+
+	// Get needed font bank
+	requiresTileset = gfxFontConvertRowToFontBank(wholeRowCol.row);
+
+	// Convert Local Tile ID to Local Row/Col
+	localTileID = gfxFontConvertTileIdToLocal(tileID, wholeRowCol.row);
+
+	// Get whole row/column
+	localRowCol = gfxFontConvertTileIdToRowCol(localTileID);
+
+	// Get X & Y
+	localXY = gfxFontConvertTileToCoords(localRowCol.row, localRowCol.col);
+
 	// Issue a pipe sync if we've already drawn some stuff and are about to switch tileset banks
 	if (fontTilesetLoaded != requiresTileset &&
 		fontTilesetLoaded > 0)
@@ -130,7 +160,7 @@ void gfxFontPrintTile(int x, int y, u8 tileID)
 
 	// Load the tileset into memory if it's not already
 	if (fontTilesetLoaded != requiresTileset)
-		gfxLoadFontTilesetBank(requiresTileset - 1);
+		gfxFontLoadTilesetBank(requiresTileset - 1);
 
 	// If I understand this correctly
 	// Load a texture at the UL and BR coordinates with the size
@@ -141,8 +171,8 @@ void gfxFontPrintTile(int x, int y, u8 tileID)
 		x + FONT_TILE_SIZE_PIXELS << 2,			// BR X Rectangle
 		y + FONT_TILE_SIZE_PIXELS << 2,			// BR Y Rectangle
 		G_TX_RENDERTILE,						// Descriptor Index
-		localX * FONT_TILE_SIZE_PIXELS << 5,	// Texture Coordinaate S UL
-		localY * FONT_TILE_SIZE_PIXELS << 5,	// Texture Coordinaate T UL
+		localXY.x * FONT_TILE_SIZE_PIXELS << 5,	// Texture Coordinaate S UL
+		localXY.y * FONT_TILE_SIZE_PIXELS << 5,	// Texture Coordinaate T UL
 		1 << 10, 1 << 10);						// Change in S/T for each X/Y
 
 	//gDPPipeSync(glistp++);
