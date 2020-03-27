@@ -15,6 +15,7 @@
 #include "gfx_basics.h"
 #include "font_tilemap.h"
 #include "font_tilemap_conversion.h"
+#include "gfx_font.h"
 
 /*=================================
 		 Global Variables
@@ -310,10 +311,11 @@ void _stageDraw(void)
 	//drawSpiral(box.state.x, box.state.y);
 
 	// Print Uppercase A followed by an Exclamation mark
-	gfxPrintFontTile(box.state.x, box.state.y, FONT_UPPER_A);
-	gfxPrintFontTile(box.state.x + 8, box.state.y, FONT_UPPER_B);
-	gfxPrintFontTile(box.state.x + 16, box.state.y, FONT_EXCLAMATION);
-	gfxEndPrintFont();
+	gfxFontBegin();
+	gfxFontPrintTile(box.state.x, box.state.y, FONT_UPPER_A);
+	gfxFontPrintTile(box.state.x + 8, box.state.y, FONT_UPPER_B);
+	gfxFontPrintTile(box.state.x + 16, box.state.y, FONT_EXCLAMATION);
+	gfxFontEnd();
 
 	// Mark us done with the gfx, this inserts some final instructions and then
 	// transmits it to the gpu
