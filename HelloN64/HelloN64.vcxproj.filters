@@ -78,6 +78,9 @@
     <ClCompile Include="font_tilemap.c">
       <Filter>src\assets</Filter>
     </ClCompile>
+    <ClCompile Include="gfx_font.c">
+      <Filter>src\gfx</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="spiral.h">
@@ -121,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="font_tilemap.h">
       <Filter>src\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="gfx_font.h">
+      <Filter>src\gfx</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

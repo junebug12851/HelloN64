@@ -150,6 +150,7 @@
     <ClCompile Include="font_tilemap.c" />
     <ClCompile Include="font_tilemap_conversion.c" />
     <ClCompile Include="gfx_basics.c" />
+    <ClCompile Include="gfx_font.c" />
     <ClCompile Include="gfx_glist.c" />
     <ClCompile Include="gfx_basis.c" />
     <ClCompile Include="main.c" />
@@ -168,6 +169,7 @@
     <ClInclude Include="font_tilemap_conversion.h" />
     <ClInclude Include="gfx_basics.h" />
     <ClInclude Include="gfx_basis.h" />
+    <ClInclude Include="gfx_font.h" />
     <ClInclude Include="gfx_glist.h" />
     <ClInclude Include="gfx_materialColor.c" />
     <ClInclude Include="gfx_materialColor.h" />
