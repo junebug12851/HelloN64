@@ -28,7 +28,10 @@ struct MotionReturn
 };
 
 extern NUContData controllerData[4];
-extern u8 controllerPattern;
+extern u16 controllerBtnDown[4];
+extern u16 controllerBtnReleased[4];
+extern u16 controllerBtnPressed[4];
+extern u8 controllerConfig;
 
 void controllerInit();
 void controllerRefreshButtonState();
@@ -38,15 +41,20 @@ u8 controllerAtLeastConfig(int reqControllerConfig);
 u8 controllerAtLeast1();
 u8 controllerCount();
 
-u8 controllerBtnMatchConfig(int controller, int reqControllerBtnConfig);
-u8 controllerBtnAtLeastConfig(int controller, int reqControllerBtnConfig);
-u8 controllerBtnAtLeast1(int controller);
-u8 controllerBtnCount(int controller);
+u8 controllerBtnDownMatchConfig(int controller, int reqControllerBtnConfig);
+u8 controllerBtnDownAtLeastConfig(int controller, int reqControllerBtnConfig);
+u8 controllerBtnDownAtLeast1(int controller);
+u8 controllerBtnDownCount(int controller);
 
-u8 controllerTrigMatchConfig(int controller, int reqControllerBtnConfig);
-u8 controllerTrigAtLeastConfig(int controller, int reqControllerBtnConfig);
-u8 controllerTrigAtLeast1(int controller);
-u8 controllerTrigCount(int controller);
+u8 controllerBtnPressedMatchConfig(int controller, int reqControllerBtnConfig);
+u8 controllerBtnPressedAtLeastConfig(int controller, int reqControllerBtnConfig);
+u8 controllerBtnPressedAtLeast1(int controller);
+u8 controllerBtnPressedCount(int controller);
+
+u8 controllerBtnReleasedMatchConfig(int controller, int reqControllerBtnConfig);
+u8 controllerBtnReleasedAtLeastConfig(int controller, int reqControllerBtnConfig);
+u8 controllerBtnReleasedAtLeast1(int controller);
+u8 controllerBtnReleasedCount(int controller);
 
 struct MotionReturn controllerJoyMotion(int controller);
 

@@ -104,6 +104,7 @@ struct BG bg = {
 
 // Constant ticking number
 u16 counter = 0;
+u8 num = 0;
 
 /*=================================
 		   ClearBackground
@@ -217,6 +218,9 @@ void _stageUpdate(void)
 		y <= (box.state.size))
 		y = box.state.y;
 
+	if(controllerBtnReleasedAtLeast1(0))
+		num++;
+
 	box.state.x = x;
 	box.state.y = y;
 
@@ -311,10 +315,22 @@ void _stageDraw(void)
 	//drawSpiral(box.state.x, box.state.y);
 
 	// Print Uppercase A followed by an Exclamation mark
+	//controllerBtnReleased[0]
 	gfxFontBegin();
-	gfxFontPrintTile(box.state.x, box.state.y, FONT_UPPER_A);
-	gfxFontPrintTile(box.state.x + 8, box.state.y, FONT_UPPER_B);
-	gfxFontPrintTile(box.state.x + 16, box.state.y, FONT_EXCLAMATION);
+
+	gfxFontPrintTile(25, 25, FONT_UPPER_D);
+	gfxFontPrintTile(25, 35, FONT_UPPER_P);
+	gfxFontPrintTile(25, 45, FONT_UPPER_R);
+
+	gfxFontPrintNumber(box.state.x, box.state.y, num);
+
+	gfxFontPrintNumber(35, 25, controllerBtnDown[0]);
+	gfxFontPrintNumber(35, 35, controllerBtnPressed[0]);
+	gfxFontPrintNumber(35, 45, controllerBtnReleased[0]);
+	//gfxFontPrintTile(box.state.x + 0, box.state.y, fontTilemapConvCache[0]);
+	//gfxFontPrintTile(box.state.x + 8, box.state.y, fontTilemapConvCache[1]);
+	//gfxFontPrintTile(box.state.x + 16, box.state.y, fontTilemapConvCache[8]);
+	//gfxFontPrintTile(box.state.x, box.state.y, fontTilemapConvCache[9]);
 	gfxFontEnd();
 
 	// Mark us done with the gfx, this inserts some final instructions and then
