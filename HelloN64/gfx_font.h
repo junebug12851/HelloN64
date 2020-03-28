@@ -20,7 +20,7 @@ u8 gfxFontConvertRowToFontBank(u8 row);
 u8 gfxFontConvertTileIdToLocal(u8 tileID, u8 row);
 struct Coords2D gfxFontConvertTileToCoords(u8 row, u8 col);
 void gfxFontPrintTile(int x, int y, u8 tileID);
-void gfxFontPrintNumber(int x, int y, u32 num);
+void gfxFontPrintNumber(int x, int y, s32 num);
 void gfxFontEnd();
 
 extern u8 fontTilesetLoaded;

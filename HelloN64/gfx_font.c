@@ -178,15 +178,19 @@ void gfxFontPrintTile(int x, int y, u8 tileID)
 	//gDPPipeSync(glistp++);
 }
 
-void gfxFontPrintNumber(int x, int y, u32 num)
+void gfxFontPrintNumber(int x, int y, s32 num)
 {
 	u8 numbers[10];
 	u8 ind = 0;
 	u8 neg = num < 0;
 	u8 tmp = 0;
 
+	if (neg)
+		num = -num;
+
 	// Save numbers in reverse order
-	while (num != 0)
+	// Limit to 10 digits
+	while (num != 0 && ind < 10)
 	{
 		// Grab the rightmost digit
 		u8 digit = num % 10;
