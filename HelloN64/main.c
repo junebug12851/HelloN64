@@ -11,6 +11,7 @@
 #include "onEvents.h"
 #include "controller_state.h"
 #include "font_tilemap_conversion.h"
+#include "memory.h"
 
 /*=================================
               Main
@@ -23,6 +24,10 @@ void mainproc(void* dummy)
     // Initialize and activate the graphics thread and Graphics Task Manager.
     // Sort of completes booting of the NuSys N64 OS
     nuGfxInit();
+
+    // Init heap, assert crash if failure
+    if (memory_initHeap() != 0)
+        return;
 
     // Then init our code that needs to be done before the app begins
 
