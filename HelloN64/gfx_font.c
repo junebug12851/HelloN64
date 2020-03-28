@@ -120,8 +120,8 @@ u8 gfxFontConvertTileIdToLocal(u8 tileID, u8 row)
 
 struct Coords2D gfxFontConvertTileToCoords(u8 row, u8 col)
 {
-	int localX = row * FONT_TILE_SIZE_PIXELS;
-	int localY = col * FONT_TILE_SIZE_PIXELS;
+	int localX = col * FONT_TILE_SIZE_PIXELS;
+	int localY = row * FONT_TILE_SIZE_PIXELS;
 
 	struct Coords2D ret = {
 		localX, localY
@@ -171,11 +171,46 @@ void gfxFontPrintTile(int x, int y, u8 tileID)
 		x + FONT_TILE_SIZE_PIXELS << 2,			// BR X Rectangle
 		y + FONT_TILE_SIZE_PIXELS << 2,			// BR Y Rectangle
 		G_TX_RENDERTILE,						// Descriptor Index
-		localXY.x * FONT_TILE_SIZE_PIXELS << 5,	// Texture Coordinaate S UL
-		localXY.y * FONT_TILE_SIZE_PIXELS << 5,	// Texture Coordinaate T UL
+		localXY.x << 5,	// Texture Coordinaate S UL
+		localXY.y << 5,	// Texture Coordinaate T UL
 		1 << 10, 1 << 10);						// Change in S/T for each X/Y
 
 	//gDPPipeSync(glistp++);
+}
+
+void gfxFontPrintNumber(int x, int y, u32 num)
+{
+	u8 numbers[10];
+	u8 ind = 0;
+	u8 neg = num < 0;
+	u8 tmp = 0;
+
+	// Save numbers in reverse order
+	while (num != 0)
+	{
+		// Grab the rightmost digit
+		u8 digit = num % 10;
+
+		// Take off the rightmost digit
+		num /= 10;
+
+		// Append it to numbers
+		numbers[ind] = digit;
+
+		// Move to next slot
+		ind++;
+	}
+
+	if (neg == 1) {
+		gfxFontPrintTile(x, y, fontTilemapConvCache['-']);
+		x += 8;
+	}
+
+	for (tmp = ind - 1; tmp < 0xFF; tmp--)
+	{
+		gfxFontPrintTile(x, y, fontTilemapConvCache[numbers[tmp]]);
+		x += 8;
+	}
 }
 
 // Has to be callled at the end of font operations
