@@ -244,9 +244,9 @@ u8 controllerBtnReleasedCount(int controller)
  * Joystick
 *************************/
 
-// Gets data from the joystick as floats in the range of 0.00 - 1.00
+// Gets data from the joystick as floats in the range of -1.00 to 1.00
 // Takes into account deadzone and proper max ranges including angled ranges.
-// Data is clamped to 1.00
+// Data is clamped
 struct MotionReturn controllerJoyMotion(int controller)
 {
 	// Grab Controller Data
