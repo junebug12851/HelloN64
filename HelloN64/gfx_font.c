@@ -244,8 +244,9 @@ void gfxFontPrintNumber(int x, int y, s32 num)
 void gfxFontEnd()
 {
 	fontTilesetLoaded = 0;
-	gDPSetTextureLUT(glistp++, G_TT_NONE);
 
 	// Issue a pipe sync before ending
 	gDPPipeSync(glistp++);
+
+	gDPSetTextureLUT(glistp++, G_TT_NONE);
 }
