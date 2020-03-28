@@ -10,7 +10,7 @@
 u8 fontTilesetLoaded = 0;
 
 // Has to be called before font operations
-void gfxFontBegin()
+void gfxFontBeginColor(u8 r, u8 g, u8 b, u8 a)
 {
 	// Ensure this is reset
 	fontTilesetLoaded = 0;
@@ -27,6 +27,29 @@ void gfxFontBegin()
 	gDPSetDepthSource(glistp++, G_ZS_PRIM);
 	gDPSetPrimDepth(glistp++, 10, 0);
 	gDPSetTexturePersp(glistp++, G_TP_NONE);
+
+	// Initializes first color and loads TLUT into TMEM
+	gfxFontChangeColor(r, g, b, a);
+}
+
+void gfxFontBegin()
+{
+	gfxFontBeginColor(30, 30, 30, 1);
+}
+
+// @TODO Make multi-thread compatibility
+// Currently if multiple threads render text of different colors
+// they all alter the same global object
+void gfxFontChangeColor(u8 r, u8 g, u8 b, u8 a)
+{
+	// If we've already drawn some stuff, issue a pipe sync
+	if (fontTilesetLoaded > 0)
+		gDPPipeSync(glistp++);
+
+	// Alter colors
+	font_tilemap_lut[0] = GPACK_RGBA5551(r, g, b, a);
+	font_tilemap_lut[1] = GPACK_RGBA5551(r, g, b, a);
+	font_tilemap_lut[2] = GPACK_RGBA5551(r, g, b, a);
 
 	// Load RGBA16 LUT for 4-bit textures into TMEM at slot 0
 	gDPSetTextureLUT(glistp++, G_TT_RGBA16);

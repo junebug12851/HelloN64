@@ -34,8 +34,8 @@ Gfx font_C_dummy_aligner0[] = { gsSPEndDisplayList() };
 // it looked attrocious on the N64 and was very difficult to read
 u16 font_tilemap_lut[FONT_TILEMAP_LUT_SIZE] = {
     0x0001, // Black
-    GPACK_RGBA5551(33, 33, 33, 1), // Dark Grey
-    GPACK_RGBA5551(40, 40, 40, 1), // Light Grey
+    GPACK_RGBA5551(20, 20, 20, 1), // Dark Grey
+    GPACK_RGBA5551(30, 30, 30, 1), // Light Grey
     0xFFFE  // Transparent White
 };
 

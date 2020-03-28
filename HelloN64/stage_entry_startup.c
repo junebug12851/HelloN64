@@ -24,8 +24,8 @@
 struct BoxState
 {
 	// Positions
-	int x;
-	int y;
+	float x;
+	float y;
 
 	// Moving Right
 	u8 moveRight;
@@ -37,7 +37,7 @@ struct BoxState
 	u8 grow;
 
 	// Current size
-	u8 size;
+	float size;
 
 	// Border Color Ind
 	// To keep track of the color list position
@@ -59,7 +59,7 @@ struct Box {
 	u8 thickness;
 
 	// Generic speed of many factors including x bounce
-	u8 speed;
+	float speed;
 
 	// Slowness Y-Bounce
 	u8 slownessY;
@@ -84,7 +84,7 @@ struct Box box = {
 	10, // Min
 	40, // Max
 	2,  // Thickness
-	10, // Speed
+	0.25f, // Speed
 	5,  // Slowness Y
 	8,  // Slowness Size
 	{
@@ -93,7 +93,7 @@ struct Box box = {
 		1, // Initially Moving Right
 		0, // Initially Moving Down
 		1,  // Initially Growing
-		30, // Size
+		30.0f, // Size
 		MATERIAL_LIGHT_BLUE // Initial Color Index
 	}
 };
@@ -122,6 +122,16 @@ void incRectInd()
 	box.state.color = materialColorList[box.state.colorInd];
 }
 
+void decRectInd()
+{
+	box.state.colorInd--;
+
+	if (box.state.colorInd >= 0xFF)
+		box.state.colorInd = MATERIAL_DEEP_ORANGE;
+
+	box.state.color = materialColorList[box.state.colorInd];
+}
+
 // Cycle forward and wrap-around background color
 void incBgInd()
 {
@@ -129,6 +139,16 @@ void incBgInd()
 
 	if (bg.colorInd > MATERIAL_DARK_BLUE_GREY)
 		bg.colorInd = MATERIAL_BROWN;
+
+	bg.color = materialColorList[bg.colorInd];
+}
+
+void decBgInd()
+{
+	bg.colorInd--;
+
+	if (bg.colorInd >= 0xFF)
+		bg.colorInd = MATERIAL_DARK_BLUE_GREY;
 
 	bg.color = materialColorList[bg.colorInd];
 }
@@ -200,15 +220,18 @@ void _stageInit(void)
 void _stageUpdate(void)
 {
 	struct MotionReturn joyData;
-	int x;
-	int y;
+	float x;
+	float y;
+
+	float size;
 
 	// Get controller input
 	controllerRefreshButtonState();
 
 	joyData = controllerJoyMotion(0);
-	x = box.state.x + (joyData.x * box.speed);
-	y = box.state.y + (joyData.y * box.speed);
+	x = box.state.x + (joyData.x * box.speed * 4);
+	y = box.state.y + (joyData.y * box.speed * 4);
+	size = box.state.size;
 
 	if (x >= (SCREEN_WD - box.state.size) ||
 		x <= (box.state.size))
@@ -224,63 +247,39 @@ void _stageUpdate(void)
 	box.state.x = x;
 	box.state.y = y;
 
-	// Counter always counts up and overflows back to zero
-	//counter++;
+	if (controllerBtnReleasedMatchConfig(0, U_JPAD))
+		incRectInd();
 
-	//// Move in direction
-	//if (box.state.moveRight == 1)
-	//	box.state.x += box.speed;
-	//else
-	//	box.state.x -= box.speed;
+	if (controllerBtnReleasedMatchConfig(0, D_JPAD))
+		decRectInd();
 
-	//// Check for boundraries and adjust accordingly
-	//if (box.state.x >= (SCREEN_WD - box.state.size)) {
-	//	box.state.x -= (box.speed * 2);
-	//	box.state.moveRight = 0;
-	//	incRectInd();
-	//}
-	//else if (box.state.x <= (box.state.size)) {
-	//	box.state.x += (box.speed * 2);
-	//	box.state.moveRight = 1;
-	//	incRectInd();
-	//}
+	if (controllerBtnReleasedMatchConfig(0, R_JPAD))
+		incBgInd();
 
-	//// Move up/down in intervals
-	//if ((counter % box.slownessY) == 0)
-	//{
-	//	if (box.state.moveDown == 1)
-	//		box.state.y += box.speed;
-	//	else
-	//		box.state.y -= box.speed;
+	if (controllerBtnReleasedMatchConfig(0, L_JPAD))
+		decBgInd();
 
-	//	if (box.state.y >= (SCREEN_HT - box.state.size)) {
-	//		box.state.y -= (box.speed * 2);
-	//		box.state.moveDown = 0;
-	//		incBgInd();
-	//	}
-	//	else if (box.state.y <= (box.state.size)) {
-	//		box.state.y += (box.speed * 2);
-	//		box.state.moveDown = 1;
-	//		incBgInd();
-	//	}
-	//}
+	if (controllerBtnDownMatchConfig(0, A_BUTTON)) {
+		size += box.speed;
 
-	//if ((counter % box.slownessSize) == 0)
-	//{
-	//	if (box.state.grow == 1)
-	//		box.state.size += box.speed;
-	//	else
-	//		box.state.size -= box.speed;
+		if (size >= box.maxSize)
+			size = box.state.size;
 
-	//	if (box.state.size >= box.maxSize) {
-	//		box.state.size -= (box.speed * 2);
-	//		box.state.grow = 0;
-	//	}
-	//	else if (box.state.size <= box.minSize) {
-	//		box.state.size += (box.speed * 2);
-	//		box.state.grow = 1;
-	//	}
-	//}
+		else if (size <= box.minSize)
+			size = box.state.size;
+	}
+
+	if (controllerBtnDownMatchConfig(0, B_BUTTON)) {
+		size -= box.speed;
+
+		if (size >= box.maxSize)
+			size = box.state.size;
+
+		else if (size <= box.minSize)
+			size = box.state.size;
+	}
+
+	box.state.size = size;
 }
 
 void debug()
@@ -299,6 +298,15 @@ void debug()
 
 	// Load into a return value
 	struct MotionReturn ret;
+
+	// Text is next color in list
+	u8 tmpColorInd = box.state.colorInd + 1;
+	struct ColorRGB tmpColor;
+
+	if (tmpColorInd > MATERIAL_DEEP_ORANGE)
+		tmpColorInd = MATERIAL_RED;
+
+	tmpColor = materialColorList[tmpColorInd];
 
 	// Clamp X & Y to both a deadzone and max ranges
 	if (x <= CONTROLLER_JOY_DEADZONE_X && x >= -CONTROLLER_JOY_DEADZONE_X)
@@ -343,7 +351,7 @@ void debug()
 
 	// Print Uppercase A followed by an Exclamation mark
 	//controllerBtnReleased[0]
-	gfxFontBegin();
+	gfxFontBeginColor(tmpColor.r, tmpColor.g, tmpColor.b, 1);
 
 	gfxFontPrintTile(25, 25, FONT_UPPER_D);
 	gfxFontPrintTile(25, 35, FONT_UPPER_P);

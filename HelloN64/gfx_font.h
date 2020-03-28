@@ -13,7 +13,9 @@ struct Coords2D
 	int y;
 };
 
+void gfxFontBeginColor(u8 r, u8 g, u8 b, u8 a);
 void gfxFontBegin();
+void gfxFontChangeColor(u8 r, u8 g, u8 b, u8 a);
 void gfxFontLoadTilesetBank(u8 fontBank);
 struct RowCol gfxFontConvertTileIdToRowCol(u8 tileID);
 u8 gfxFontConvertRowToFontBank(u8 row);
