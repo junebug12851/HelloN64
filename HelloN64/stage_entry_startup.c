@@ -330,12 +330,12 @@ void debug()
 
 	// Convert the number to a range depending on angle
 	if (angled == 0) {
-		retX = x / CONTROLLER_JOY_RNG_X;
-		retY = y / CONTROLLER_JOY_RNG_Y;
+		retX = ((float)x) / ((float)CONTROLLER_JOY_RNG_X);
+		retY = ((float)y) / ((float)CONTROLLER_JOY_RNG_Y);
 	}
 	else {
-		retX = x / CONTROLLER_JOY_RNG_ANG_X;
-		retY = y / CONTROLLER_JOY_RNG_ANG_Y;
+		retX = ((float)x) / ((float)CONTROLLER_JOY_RNG_ANG_X);
+		retY = ((float)y) / ((float)CONTROLLER_JOY_RNG_ANG_Y);
 	}
 
 	// Cap it at 1.00 if it's past 1.00
