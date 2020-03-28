@@ -147,7 +147,7 @@ void decBgInd()
 {
 	bg.colorInd--;
 
-	if (bg.colorInd >= 0xFF)
+	if (bg.colorInd < MATERIAL_BROWN)
 		bg.colorInd = MATERIAL_DARK_BLUE_GREY;
 
 	bg.color = materialColorList[bg.colorInd];
