@@ -30,10 +30,12 @@
 Gfx font_C_dummy_aligner0[] = { gsSPEndDisplayList() };
 
 // Font Tilemap LUT
+// modified because coming from the Gameboy colors
+// it looked attrocious on the N64 and was very difficult to read
 u16 font_tilemap_lut[FONT_TILEMAP_LUT_SIZE] = {
     0x0001, // Black
-    0x5295, // Dark Grey
-    0xA529, // Light Grey
+    GPACK_RGBA5551(33, 33, 33, 1), // Dark Grey
+    GPACK_RGBA5551(40, 40, 40, 1), // Light Grey
     0xFFFE  // Transparent White
 };
 
