@@ -283,6 +283,99 @@ void _stageUpdate(void)
 	//}
 }
 
+void debug()
+{
+	// Grab Controller Data
+	NUContData* data = &controllerData[0];
+
+	// Grab Raw Joy Data
+	s8 x = data->stick_x;
+	s8 y = -data->stick_y; // Y is actually inverted, we need to correct it
+	u8 angled = 0;
+
+	// Prepare return ranges between -1.0 and 1.0
+	float retX = 0.0f;
+	float retY = 0.0f;
+
+	// Load into a return value
+	struct MotionReturn ret;
+
+	// Clamp X & Y to both a deadzone and max ranges
+	if (x <= CONTROLLER_JOY_DEADZONE_X && x >= -CONTROLLER_JOY_DEADZONE_X)
+		x = 0;
+	else if (x >= CONTROLLER_JOY_RNG_X)
+		x = CONTROLLER_JOY_RNG_X;
+	else if (x <= -CONTROLLER_JOY_RNG_X)
+		x = -CONTROLLER_JOY_RNG_X;
+
+	if (y <= CONTROLLER_JOY_DEADZONE_Y && y >= -CONTROLLER_JOY_DEADZONE_Y)
+		y = 0;
+	else if (y >= CONTROLLER_JOY_RNG_Y)
+		y = CONTROLLER_JOY_RNG_Y;
+	else if (y <= -CONTROLLER_JOY_RNG_Y)
+		y = -CONTROLLER_JOY_RNG_Y;
+
+	// Mark if it's angled, angles have a narrower range
+	if ((x > 0 || x < 0) &&
+		(y > 0 || y < 0))
+		angled = 1;
+
+	// Convert the number to a range depending on angle
+	if (angled == 0) {
+		retX = x / CONTROLLER_JOY_RNG_X;
+		retY = y / CONTROLLER_JOY_RNG_Y;
+	}
+	else {
+		retX = x / CONTROLLER_JOY_RNG_ANG_X;
+		retY = y / CONTROLLER_JOY_RNG_ANG_Y;
+	}
+
+	// Cap it at 1.00 if it's past 1.00
+	if (retX > 1.00f)
+		retX = 1.00f;
+	else if (retX < -1.00f)
+		retX = -1.00f;
+
+	if (retY > 1.00f)
+		retY = 1.00f;
+	else if (retY < -1.00f)
+		retY = -1.00f;
+
+	// Print Uppercase A followed by an Exclamation mark
+	//controllerBtnReleased[0]
+	gfxFontBegin();
+
+	gfxFontPrintTile(25, 25, FONT_UPPER_D);
+	gfxFontPrintTile(25, 35, FONT_UPPER_P);
+	gfxFontPrintTile(25, 45, FONT_UPPER_R);
+
+	gfxFontPrintTile(25, 65, FONT_UPPER_X);
+	gfxFontPrintTile(25, 75, FONT_UPPER_Y);
+	gfxFontPrintTile(25, 85, FONT_UPPER_A);
+
+	gfxFontPrintTile(65, 65, FONT_PERCENT);
+	gfxFontPrintTile(65, 75, FONT_PERCENT);
+
+	gfxFontPrintNumber(box.state.x, box.state.y, num);
+
+	gfxFontPrintNumber(35, 25, controllerBtnDown[0]);
+	gfxFontPrintNumber(35, 35, controllerBtnPressed[0]);
+	gfxFontPrintNumber(35, 45, controllerBtnReleased[0]);
+
+	gfxFontPrintNumber(35, 65, x);
+	gfxFontPrintNumber(35, 75, y);
+	gfxFontPrintNumber(35, 85, angled);
+
+	gfxFontPrintNumber(75, 65, retX * 100);
+	gfxFontPrintNumber(75, 75, retY * 100);
+
+	//gfxFontPrintTile(box.state.x + 0, box.state.y, fontTilemapConvCache[0]);
+	//gfxFontPrintTile(box.state.x + 8, box.state.y, fontTilemapConvCache[1]);
+	//gfxFontPrintTile(box.state.x + 16, box.state.y, fontTilemapConvCache[8]);
+	//gfxFontPrintTile(box.state.x, box.state.y, fontTilemapConvCache[9]);
+	gfxFontEnd();
+}
+
 void _stageDraw(void)
 {
 	// Start RCP instructions Over Again
@@ -314,24 +407,7 @@ void _stageDraw(void)
 	// Draw Spiral Centered
 	//drawSpiral(box.state.x, box.state.y);
 
-	// Print Uppercase A followed by an Exclamation mark
-	//controllerBtnReleased[0]
-	gfxFontBegin();
-
-	gfxFontPrintTile(25, 25, FONT_UPPER_D);
-	gfxFontPrintTile(25, 35, FONT_UPPER_P);
-	gfxFontPrintTile(25, 45, FONT_UPPER_R);
-
-	gfxFontPrintNumber(box.state.x, box.state.y, num);
-
-	gfxFontPrintNumber(35, 25, controllerBtnDown[0]);
-	gfxFontPrintNumber(35, 35, controllerBtnPressed[0]);
-	gfxFontPrintNumber(35, 45, controllerBtnReleased[0]);
-	//gfxFontPrintTile(box.state.x + 0, box.state.y, fontTilemapConvCache[0]);
-	//gfxFontPrintTile(box.state.x + 8, box.state.y, fontTilemapConvCache[1]);
-	//gfxFontPrintTile(box.state.x + 16, box.state.y, fontTilemapConvCache[8]);
-	//gfxFontPrintTile(box.state.x, box.state.y, fontTilemapConvCache[9]);
-	gfxFontEnd();
+	debug();
 
 	// Mark us done with the gfx, this inserts some final instructions and then
 	// transmits it to the gpu
