@@ -361,6 +361,8 @@ void debug()
 	gfxFontPrintTile(25, 75, FONT_UPPER_Y);
 	gfxFontPrintTile(25, 85, FONT_UPPER_A);
 
+	gfxFontPrintTile(25, 105, FONT_UPPER_G);
+
 	gfxFontPrintTile(65, 65, FONT_PERCENT);
 	gfxFontPrintTile(65, 75, FONT_PERCENT);
 
@@ -377,6 +379,24 @@ void debug()
 
 	gfxFontPrintNumber(box.state.x, box.state.y, num);
 
+	gfxFontPrintNumber(35, 105, glistp - glist);
+
+	gfxFontEnd();
+}
+
+void debugGlistp()
+{
+	// Text is next color in list
+	u8 tmpColorInd = box.state.colorInd + 1;
+	struct ColorRGB tmpColor;
+
+	if (tmpColorInd > MATERIAL_DEEP_ORANGE)
+		tmpColorInd = MATERIAL_RED;
+
+	tmpColor = materialColorList[tmpColorInd];
+
+	gfxFontBeginColor(tmpColor.r, tmpColor.g, tmpColor.b, 1);
+	gfxFontPrintNumber(25, 25, glistp - glist);
 	gfxFontEnd();
 }
 
@@ -409,9 +429,11 @@ void _stageDraw(void)
 		(box.state.y + box.state.size) - box.thickness);
 
 	// Draw Spiral Centered
-	//drawSpiral(box.state.x, box.state.y);
+	drawSpiral(box.state.x, box.state.y);
 
-	debug();
+	//debug();
+
+	debugGlistp();
 
 	// Mark us done with the gfx, this inserts some final instructions and then
 	// transmits it to the gpu
