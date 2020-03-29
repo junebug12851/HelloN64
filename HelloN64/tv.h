@@ -4,4 +4,13 @@
 void tvPreNmi();
 void tvInit();
 
+void tvMpalPreNmi();
+void tvMpalInit();
+
+void tvNtscPreNmi();
+void tvNtscInit();
+
+void tvPalPreNmi();
+void tvPalInit();
+
 #endif

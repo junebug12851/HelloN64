@@ -1,6 +1,6 @@
 N64KITDIR	= c:/nintendo/n64kit
 
-TARGET		= HelloN64_$(TVFORMAT)
+TARGET		= HelloN64
 CODEFILES   = $(wildcard *.c)
 
 ############################################################################
@@ -15,14 +15,16 @@ OPTIMIZER	= -O0
 NUSYSDIR	= $(N64KITDIR)/nusys
 NUSYSINC	= $(NUSYSDIR)/include
 NUSYSLIB	= $(NUSYSDIR)/lib
+NUSTDINCDIR  = $(N64KITDIR)/nustd/include
+NUSTDLIBDIR  = $(N64KITDIR)/nustd/lib
 
 NUOBJ		= $(NUSYSLIB)/nusys.o
 CODEOBJECTS	= $(CODEFILES:.c=.o) $(NUOBJ)
 
 CUSTFLAGS	= 
-LCINCS		= -I$(NUSYSINC)
+LCINCS		= -I$(NUSYSINC) -I$(NUSTDINCDIR)
 LCOPTS		= -G 0 $(DEBUGSYM) $(CUSTFLAGS)
-LDFLAGS		= -L$(ROOT)/usr/lib -L$(ROOT)/usr/lib/PR -L$(NUSYSLIB) -lnusys_d -lgultra_d -L$(GCCDIR)/mipse/lib -lkmc
+LDFLAGS		= -L$(ROOT)/usr/lib -L$(ROOT)/usr/lib/PR -L$(NUSYSLIB) -L$(NUSTDLIBDIR) -lnusys_d -lgultra_d -lnustd_d -L$(GCCDIR)/mipse/lib -lkmc
 
 CODESEGMENT	= codesegment.o
 OBJECTS		= $(CODESEGMENT)

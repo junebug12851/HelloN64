@@ -31,7 +31,7 @@ void mainproc(void* dummy)
 
     // Then init our code that needs to be done before the app begins
 
-    // Inits the TV format being compiled for
+    // Inits the TV format based on the device this is plugged into
     tvInit();
 
     // Initialize the controllers

@@ -1,8 +1,6 @@
-#ifdef PAL_TV
-
 #include <nusys.h>
 
-void tvPreNmi()
+void tvPalPreNmi()
 {
     // We're dodging around a difficult NuSys bug by doing this for the time being
     // Turn off the display and re-fix Y-Scale back to 1
@@ -10,7 +8,7 @@ void tvPreNmi()
     osViSetYScale(1);
 }
 
-void tvInit()
+void tvPalInit()
 {
     // Set video mode to Full-Screen PAL
     // 320x288
@@ -22,5 +20,3 @@ void tvInit()
     // If Pre-NMI event occurs (Reset Button) this will crash if not fixed back correctly
     osViSetYScale(0.833); // Dirty but works
 }
-
-#endif
