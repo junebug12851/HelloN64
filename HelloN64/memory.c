@@ -1,5 +1,4 @@
 #include <nusys.h>
-#include <ultra64.h>
 #include "memory.h"
 
 char memoryHeap[HEAP_SIZE];
