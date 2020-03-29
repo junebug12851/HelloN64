@@ -31,6 +31,9 @@
     <Filter Include="src\text">
       <UniqueIdentifier>{4d682109-8d93-4fbb-8b61-f566a1f95d19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\memory">
+      <UniqueIdentifier>{347032db-846e-455c-9805-c6e005d57c8e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -81,6 +84,9 @@
     <ClCompile Include="gfx_font.c">
       <Filter>src\gfx</Filter>
     </ClCompile>
+    <ClCompile Include="memory.c">
+      <Filter>src\memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="spiral.h">
@@ -127,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="gfx_font.h">
       <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="memory.h">
+      <Filter>src\memory</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

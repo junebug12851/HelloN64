@@ -71,22 +71,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\nintendo\n64kit\nusys\include;C:\n64\n64sdk\ultra\usr\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\nintendo\n64kit\nusys\include;C:\n64\n64sdk\ultra\usr\include;C:\nintendo\n64kit\nustd\include;$(IncludePath)</IncludePath>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\nintendo\n64kit\nusys\include;C:\n64\n64sdk\ultra\usr\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\nintendo\n64kit\nusys\include;C:\n64\n64sdk\ultra\usr\include;C:\nintendo\n64kit\nustd\include;$(IncludePath)</IncludePath>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\nintendo\n64kit\nusys\include;C:\n64\n64sdk\ultra\usr\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\nintendo\n64kit\nusys\include;C:\n64\n64sdk\ultra\usr\include;C:\nintendo\n64kit\nustd\include;$(IncludePath)</IncludePath>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\nintendo\n64kit\nusys\include;C:\n64\n64sdk\ultra\usr\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\nintendo\n64kit\nusys\include;C:\n64\n64sdk\ultra\usr\include;C:\nintendo\n64kit\nustd\include;$(IncludePath)</IncludePath>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -154,6 +154,7 @@
     <ClCompile Include="gfx_glist.c" />
     <ClCompile Include="gfx_basis.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="memory.c" />
     <ClCompile Include="tv_mpalTV.c" />
     <ClCompile Include="tv_ntscTV.c" />
     <ClCompile Include="tv_palTV.c" />
@@ -174,6 +175,7 @@
     <ClInclude Include="gfx_materialColor.c" />
     <ClInclude Include="gfx_materialColor.h" />
     <ClInclude Include="gfx_screen.h" />
+    <ClInclude Include="memory.h" />
     <ClInclude Include="onEvents.h" />
     <ClInclude Include="stage_list.h" />
     <ClInclude Include="tv.h" />
